@@ -1,0 +1,132 @@
+<div th:fragment="content">
+    <div class="container mt-3 mt-md-4">
+        <!-- Cabeçalho -->
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h3 class="h5 h4-md mb-0"><i class="fas fa-map-marker-alt me-2"></i>Tipos de Lotação</h3>
+            <button class="btn btn-light btn-sm" onclick="openModal('/tipo-lotacao/novo')">
+                <i class="fas fa-plus me-1"></i>Novo Tipo
+            </button>
+        </div>
+
+        <!-- Mensagens de feedback -->
+        <div th:if="${successMessage}" class="alert alert-success alert-dismissible fade show" role="alert">
+            <span th:text="${successMessage}"></span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+        
+        <div th:if="${errorMessage}" class="alert alert-danger alert-dismissible fade show" role="alert">
+            <span th:text="${errorMessage}"></span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+
+        <!-- Conteúdo apenas quando há tipos de lotação -->
+        <div th:if="${tipos != null and not tipos.empty}">
+            <!-- Contador -->
+            <div class="row mb-3">
+                <div class="col-12">
+                    <div class="text-muted small">
+                        <i class="fas fa-info-circle me-1"></i>
+                        <span th:text="${tipos.size()}"></span> tipos de lotação cadastrados
+                    </div>
+                </div>
+            </div>
+
+            <!-- Versão Desktop (Table) -->
+            <div class="d-none d-md-block">
+                <div class="table-responsive">
+                    <table id="tabelaTiposLotacao" class="datatable display table table-striped table-hover align-middle" style="width:100%">
+                        <thead class="table-primary">
+                            <tr>
+                                <th><i class="fas fa-hashtag me-2"></i>ID</th>
+                                <th><i class="fas fa-tag me-2"></i>Descrição</th>
+                                <th width="180"><i class="fas fa-cogs me-2"></i>Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:each="tipo : ${tipos}">
+                                <td th:text="${tipo.id}" class="fw-bold text-muted"></td>
+                                <td>
+                                    <div class="fw-bold text-primary" th:text="${tipo.descricao}"></div>
+                                </td>
+                                <td>
+                                    <div class="btn-group btn-group-sm" role="group">
+                                        <!-- Botão Editar -->
+                                        <button class="btn btn-outline-primary"
+                                                th:onclick="'openModal(\'' + @{/tipo-lotacao/editar/{id}(id=${tipo.id})} + '\')'"
+                                                title="Editar tipo de lotação">
+                                            <i class="fas fa-edit"></i>
+                                        </button>
+                                        
+                                        <!-- Botão Excluir -->
+                                        <button class="btn btn-outline-danger"
+                                                th:onclick="'excluirTipoLotacao(' + ${tipo.id} + ')'"
+                                                title="Excluir tipo de lotação">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Versão Mobile (Cards) -->
+            <div class="d-md-none">
+                <div class="row g-3">
+                    <div th:each="tipo : ${tipos}" class="col-12">
+                        <div class="card mobile-curso-card h-100">
+                            <div class="card-body p-3">
+                                <div class="d-flex justify-content-between align-items-start mb-2">
+                                    <h5 class="card-title text-primary mb-0" th:text="${tipo.descricao}"></h5>
+                                    <small class="text-muted fw-bold" th:text="'ID: ' + ${tipo.id}"></small>
+                                </div>
+
+                                <div class="d-grid gap-2 pt-3 border-top mobile-actions">
+                                    <!-- Botão Editar -->
+                                    <button class="btn btn-sm btn-outline-primary"
+                                            th:onclick="'openModal(\'' + @{/tipo-lotacao/editar/{id}(id=${tipo.id})} + '\')'">
+                                        <i class="fas fa-edit me-2"></i>Editar Tipo
+                                    </button>
+                                    
+                                    <!-- Botão Excluir -->
+                                    <button class="btn btn-sm btn-outline-danger"
+                                            th:onclick="'excluirTipoLotacao(' + ${tipo.id} + ')'">
+                                        <i class="fas fa-trash me-2"></i>Excluir Tipo
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Estado Vazio -->
+        <div th:if="${tipos == null or tipos.empty}" class="text-center py-5 empty-cursos-state">
+            <i class="fas fa-map-marker-alt fa-3x text-muted mb-3"></i>
+            <h4 class="text-muted h5 h4-md">Nenhum tipo de lotação cadastrado</h4>
+            <p class="text-muted mb-3">Clique em "Novo Tipo" para adicionar o primeiro tipo de lotação.</p>
+        </div>
+    </div>
+</div>
+
+<!-- Script para funcionalidades -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Tooltips para melhorar acessibilidade
+    if (typeof bootstrap !== 'undefined') {
+        const tooltipTriggerList = [].slice.call(document.querySelectorAll('[title]'));
+        tooltipTriggerList.map(function(tooltipTriggerEl) {
+            return new bootstrap.Tooltip(tooltipTriggerEl);
+        });
+    }
+});
+
+// Função para excluir tipo de lotação com confirmação
+function excluirTipoLotacao(tipoId) {
+    if (confirm('Tem certeza que deseja excluir este tipo de lotação?\n\nEsta ação não pode ser desfeita e pode afetar lotações existentes.')) {
+        window.location.href = '/tipo-lotacao/excluir/' + tipoId;
+    }
+}
+</script>

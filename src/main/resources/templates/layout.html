@@ -1,0 +1,398 @@
+    <!DOCTYPE html>
+    <html lang="pt-BR">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta name="_csrf" th:content="${_csrf.token}"/>
+        <meta name="_csrf_header" th:content="${_csrf.headerName}"/>
+        <title>Matrícula CPU</title>
+        <link rel="icon" type="image/x-icon" href="/favicon/favicon.ico">
+        <link rel="icon" type="image/png" sizes="32x32" href="/favicon/favicon-32x32.png">
+        <link rel="icon" type="image/png" sizes="16x16" href="/favicon/favicon-16x16.png">
+        <link rel="icon" type="image/svg+xml" href="/favicon/favicon.svg">
+        
+        <!-- CSS do Bootstrap e outros -->
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+        <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css">
+        <link rel="stylesheet" href="https://cdn.datatables.net/buttons/2.4.1/css/buttons.dataTables.min.css">
+        <link th:href="@{/css/style.css}" rel="stylesheet">
+        <link th:href="@{/css/fonts.css}" rel="stylesheet">
+        <!-- CSS do Toastr -->
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css" />
+
+    </head>
+    <body>
+
+        <!-- Navbar -->
+        <div th:if="${showSidebar}" th:replace="~{fragments/navbar :: navbar}"></div>
+
+        <!-- Wrapper principal -->
+        <div class="main-content">
+            <!-- Conteúdo Principal -->
+            <main class="container-fluid" th:classappend="${!showSidebar} ? 'p-0' : ''">
+                <div th:replace="~{${content}}"></div>
+            </main>
+        </div>
+
+        <div th:replace="~{fragments/footer :: footer}"></div>
+
+        <div class="modal fade" id="modalGlobal" tabindex="-1" aria-hidden="true">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content" id="modalContent">
+                    <!-- O conteúdo do formulário será carregado aqui via AJAX ou Thymeleaf fragment -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Scripts no final do body, na ordem correta -->
+        <!-- jQuery primeiro -->
+        <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.mask/1.14.16/jquery.mask.min.js"></script>
+        
+        <!-- Bootstrap -->
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+        
+        <!-- DataTables e dependências -->
+        <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+        <script src="https://cdn.datatables.net/buttons/2.4.1/js/dataTables.buttons.min.js"></script>
+        <script src="https://cdn.datatables.net/buttons/2.4.1/js/buttons.html5.min.js"></script>
+        <script src="https://cdn.datatables.net/buttons/2.4.1/js/buttons.print.min.js"></script>
+        
+        <!-- Dependências para exportar Excel e PDF -->
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/pdfmake.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/vfs_fonts.js"></script>
+
+        <!-- Configuração personalizada do DataTables -->
+        <script src="/js/datatables-config.js"></script>
+
+        <!-- JS do Toastr (depende do jQuery) -->
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+        <!-- Editor de texto TinyMCE -->
+        <script th:src="'https://cdn.tiny.cloud/1/' + ${@environment.getProperty('tinymce.api-key')} + '/tinymce/7/tinymce.min.js'" referrerpolicy="origin"></script>
+
+        <!-- Seu script personalizado -->
+        <script>
+            // Funções globais
+            function openModal(url) {
+                $.get(url, function(html) {
+                    $("#modalContent").html(html);
+                    var modal = new bootstrap.Modal(document.getElementById('modalGlobal'));
+                    modal.show();
+                });
+            }
+
+            // Função para scroll em erros (mantém como global se necessário)
+            window.forceScrollToErrors = function() {
+                setTimeout(scrollToFirstError, 150);
+            };
+
+            $(document).ready(function() {
+                // Inicializa DataTables apenas se a tabela existir
+                if ($('.datatable').length) {
+                    $('.datatable').DataTable();
+                }
+
+                // Tooltips
+                if (typeof bootstrap !== 'undefined') {
+                    const tooltipTriggerList = [].slice.call(document.querySelectorAll('[title]'));
+                    tooltipTriggerList.map(function(tooltipTriggerEl) {
+                        return new bootstrap.Tooltip(tooltipTriggerEl);
+                    });
+                }
+
+                function applyMasks(container) {
+                    container.find('input[id^="cpf"]').mask('000.000.000-00');
+                    container.find('input[id^="telefone"]').mask('(00) 00000-0000');
+                    container.find('input[id^="cns"]').mask('000 0000 0000 0000');
+                    //container.find('input[id^="data"]').mask('00/00/0000');
+                    
+                    // Aplica máscara apenas se o campo não for readonly
+                    container.find('input[id^="NIS"]:not([readonly])').mask('000.00000.00-0');
+                }
+
+                // Aplica nas páginas estáticas
+                applyMasks($(document));
+
+                // Aplica nos modais quando abrem
+                $(document).on('shown.bs.modal', function(event) {
+                    applyMasks($(event.target));
+                });
+
+                function scrollToFirstError() {
+                    const firstError = $('.is-invalid, :invalid').first();
+                    console.log("Encontrado campo com erro:", firstError.length, firstError.attr('name'));
+                    
+                    if (firstError.length) {
+                        // Pequeno delay para garantir que o DOM está estável
+                        setTimeout(() => {
+                            const navbar = $('.navbar');
+                            const navbarHeight = navbar.length ? navbar.outerHeight() : 0;
+                            const elementOffset = firstError.offset();
+                            
+                            if (elementOffset) {
+                                // Calcula a posição com margem de segurança
+                                const offset = Math.max(0, elementOffset.top - 30);
+                                console.log("Scroll para:", offset, "px");
+                                
+                                // Animação suave sem delays desnecessários
+                                $('html, body').stop(true).animate({
+                                    scrollTop: offset
+                                }, {
+                                    duration: 800,
+                                    easing: 'swing',
+                                    complete: function() {
+                                        // Foca no elemento após a animação
+                                        if (firstError.is(':input') && !firstError.is(':disabled') && firstError.is(':visible')) {
+                                            try {
+                                                firstError[0].focus();
+                                                firstError[0].scrollIntoView({ behavior: 'smooth', block: 'center' });
+                                            } catch (e) {
+                                                console.log("Não foi possível focar no elemento:", e);
+                                            }
+                                        }
+                                    }
+                                });
+                            }
+                        }, 50);
+                    }
+                }
+                
+                // Função para validar formulário e mostrar erros
+                function validateAndShowErrors(form) {
+                    let isValid = true;
+                    
+                    // Limpa erros anteriores
+                    form.find('.is-invalid').removeClass('is-invalid');
+                    form.find('.invalid-feedback').remove();
+                    
+                    // Valida cada campo required
+                    form.find('[required]').each(function() {
+                        const field = $(this);
+                        
+                        if (!field.val().trim()) {
+                            field.addClass('is-invalid');
+                            
+                            // Adiciona mensagem de erro se não existir
+                            if (!field.next('.invalid-feedback').length) {
+                                field.after('<div class="invalid-feedback">Este campo é obrigatório.</div>');
+                            }
+                            
+                            isValid = false;
+                        }
+                    });
+                    
+                    // Valida campos com pattern
+                    form.find('[pattern]').each(function() {
+                        const field = $(this);
+                        const pattern = new RegExp(field.attr('pattern'));
+                        
+                        if (field.val().trim() && !pattern.test(field.val())) {
+                            field.addClass('is-invalid');
+                            
+                            if (!field.next('.invalid-feedback').length) {
+                                field.after('<div class="invalid-feedback">Formato inválido.</div>');
+                            }
+                            
+                            isValid = false;
+                        }
+                    });
+                    
+                    // Valida campos de email
+                    form.find('input[type="email"]').each(function() {
+                        const field = $(this);
+                        const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                        
+                        if (field.val().trim() && !emailPattern.test(field.val())) {
+                            field.addClass('is-invalid');
+                            
+                            if (!field.next('.invalid-feedback').length) {
+                                field.after('<div class="invalid-feedback">Email inválido.</div>');
+                            }
+                            
+                            isValid = false;
+                        }
+                    });
+                    
+                    return isValid;
+                }
+
+                // Intercepta a validação de formulários - VERSÃO CORRIGIDA
+                $(document).on('submit', 'form', function(event) {
+                    const form = $(this);
+                    console.log("Validando formulário antes do submit...");
+                    
+                    // Faz a validação customizada
+                    const isValid = validateAndShowErrors(form);
+                    
+                    if (!isValid) {
+                        console.log("Formulário inválido - impedindo envio e acionando scroll");
+                        event.preventDefault();
+                        event.stopPropagation();
+                        
+                        // Scroll para o primeiro erro
+                        setTimeout(scrollToFirstError, 100);
+                        return false;
+                    }
+                    
+                    console.log("Formulário válido - permitindo envio");
+                    return true;
+                });
+
+                // Validação em tempo real para melhor UX
+                $(document).on('blur', 'input[required], input[pattern], input[type="email"]', function() {
+                    const field = $(this);
+                    const form = field.closest('form');
+                    
+                    // Remove feedback anterior
+                    field.removeClass('is-invalid');
+                    field.next('.invalid-feedback').remove();
+                    
+                    // Validação para campos required
+                    if (field.attr('required') && !field.val().trim()) {
+                        field.addClass('is-invalid');
+                        field.after('<div class="invalid-feedback">Este campo é obrigatório.</div>');
+                        return;
+                    }
+                    
+                    // Validação para campos com pattern
+                    if (field.attr('pattern') && field.val().trim()) {
+                        const pattern = new RegExp(field.attr('pattern'));
+                        if (!pattern.test(field.val())) {
+                            field.addClass('is-invalid');
+                            field.after('<div class="invalid-feedback">Formato inválido.</div>');
+                            return;
+                        }
+                    }
+                    
+                    // Validação para email
+                    if (field.attr('type') === 'email' && field.val().trim()) {
+                        const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                        if (!emailPattern.test(field.val())) {
+                            field.addClass('is-invalid');
+                            field.after('<div class="invalid-feedback">Email inválido.</div>');
+                            return;
+                        }
+                    }
+                });
+                
+
+                // Função específica para inicializar em modais
+                function initTinyMCEInModal(modalElement) {
+                    // Remove apenas os editores dentro do modal específico
+                    const editors = modalElement.querySelectorAll('textarea.rich-text');
+                    editors.forEach(textarea => {
+                        const editorId = textarea.id;
+                        if (editorId && tinymce.get(editorId)) {
+                            tinymce.get(editorId).remove();
+                        }
+                    });
+                    
+                    // Pequeno delay antes de reinicializar
+                    setTimeout(() => {
+                        tinymce.init({
+                            target: modalElement.querySelector('textarea.rich-text'),
+                            height: 570,
+                            menubar: false,
+                            plugins: 'lists advlist table code',
+                            toolbar: 'undo redo | fontsize | bold italic underline | alignleft aligncenter alignright alignjustify | bullist numlist | table code',
+                            branding: false,
+                            toolbar_mode: 'sliding',
+                            auto_focus: false,
+                            // Configuração importante para modais do Bootstrap
+                            fixed_toolbar_container: modalElement.querySelector('.tox-toolbar'),
+                            verify_html: true, // força validação HTML
+                            forced_root_block: 'p', // garante um root block
+                            extended_valid_elements: 'colgroup[col|span|width],col[style|span|width],table[border|cellpadding|cellspacing|width|style]', // permite colgroup/col
+                            init_instance_callback: function(editor) {
+                                console.log('Editor no modal inicializado:', editor.id);
+                            },
+                            setup: function(editor) {
+                                editor.on('init', function() {
+                                    // Garante que o editor está visível no modal
+                                    editor.getContainer().style.visibility = 'visible';
+                                });
+                            },
+                            content_style: `
+                                body {
+                                    font-family: Helvetica, Arial, sans-serif;
+                                    font-size: 18px;
+                                    line-height: 1.4;
+                                    margin: 0;
+                                    padding: 0 0.5em 0 0.5em;
+                                    max-height: 200px;
+                                    overflow: hidden;
+                                }
+                                p, li { margin: 0; padding: 0; }
+                                ol { counter-reset: item; list-style: none; padding-left: 1.8em; }
+                                ol li { counter-increment: item; margin: 0.1em 0; }
+                                ol li:before { content: counters(item, ".") " "; display: inline-block; width: 1.5em; }
+                                li ol { margin-left: 1.2em; }
+                            `
+                        });
+                    });
+                }
+
+                // Evento quando o modal é completamente aberto
+                $(document).on('shown.bs.modal', function (event) {
+                    const modal = event.target;
+                    console.log('Modal aberto, inicializando TinyMCE...');
+                    
+                    // Pequeno delay para garantir que o modal está totalmente renderizado
+                    setTimeout(() => {
+                        if (modal.querySelector('textarea.rich-text')) {
+                            initTinyMCEInModal(modal);
+                        }
+                    }, 200);
+                });
+            
+
+                // Evento quando o modal é fechado - limpa os editores
+                $(document).on('hidden.bs.modal', function (event) {
+                    const modal = event.target;
+                    const editors = modal.querySelectorAll('textarea.rich-text');
+                    
+                    editors.forEach(textarea => {
+                        const editorId = textarea.id;
+                        if (editorId && tinymce.get(editorId)) {
+                            tinymce.get(editorId).remove();
+                        }
+                    });
+                });
+
+            });    
+
+        </script>
+
+        <script th:inline="javascript">
+        /*<![CDATA[*/
+        // Configuração global do Toastr
+            toastr.options = {
+                "positionClass": "toast-top-full-width", // full-width, logo abaixo da navbar
+                "timeOut": "3000",
+                "closeButton": true,
+                "progressBar": true,
+                "newestOnTop": true,
+                "preventDuplicates": true,
+                "showDuration": "300",
+                "hideDuration": "1000",
+                "extendedTimeOut": "1000"
+            };
+
+            // Mensagens do backend
+            var successMessage = /*[[${successMessage}]]*/ null;
+            if (successMessage) {
+                toastr.success(successMessage);
+            }
+
+            var errorMessage = /*[[${errorMessage}]]*/ null;
+            if (errorMessage) {
+                toastr.error(errorMessage);
+            }
+        /*]]>*/
+        </script>
+
+    </body>
+</html>

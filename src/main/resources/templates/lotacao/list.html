@@ -1,0 +1,176 @@
+<div th:fragment="content">
+    <div class="container mt-3 mt-md-4">
+        <!-- Cabeçalho -->
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h3 class="h5 h4-md mb-0"><i class="fas fa-building me-2"></i>Lotações</h3>
+            <button class="btn btn-light btn-sm" onclick="openModal('/lotacao/novo')">
+                <i class="fas fa-plus me-1"></i>Nova Lotação
+            </button>
+        </div>
+
+        <!-- Mensagens de feedback -->
+        <div th:if="${successMessage}" class="alert alert-success alert-dismissible fade show" role="alert">
+            <span th:text="${successMessage}"></span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+        
+        <div th:if="${errorMessage}" class="alert alert-danger alert-dismissible fade show" role="alert">
+            <span th:text="${errorMessage}"></span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+
+        <!-- Conteúdo apenas quando há lotações -->
+        <div th:if="${lotacoes != null and not lotacoes.empty}">
+            <!-- Contador -->
+            <div class="row mb-3">
+                <div class="col-12">
+                    <div class="text-muted small">
+                        <i class="fas fa-info-circle me-1"></i>
+                        <span th:text="${lotacoes.size()}"></span> lotações cadastradas
+                    </div>
+                </div>
+            </div>
+
+            <!-- Versão Desktop (Table) -->
+            <div class="d-none d-md-block">
+                <div class="table-responsive">
+                    <table id="tabelaLotacoes" class="datatable display table table-striped table-hover align-middle" style="width:100%">
+                        <thead class="table-primary">
+                            <tr>
+                                <th><i class="fas fa-hashtag me-2"></i>ID</th>
+                                <th><i class="fas fa-building me-2"></i>Nome</th>
+                                <th><i class="fas fa-map-marker-alt me-2"></i>Endereço</th>
+                                <th><i class="fas fa-tag me-2"></i>Tipo de Lotação</th>
+                                <th width="180"><i class="fas fa-cogs me-2"></i>Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:each="lotacao : ${lotacoes}">
+                                <td th:text="${lotacao.id}" class="fw-bold text-muted"></td>
+                                <td>
+                                    <div class="fw-bold text-primary" th:text="${lotacao.nome}"></div>
+                                    <small th:if="${lotacao.cidade}" class="text-muted" th:text="${lotacao.cidade}"></small>
+                                </td>
+                                <td>
+                                    <div th:text="${lotacao.endereco}"></div>
+                                </td>
+                                <td>
+                                    <span th:if="${lotacao.tipoLotacao}" 
+                                          th:classappend="${lotacao.tipoLotacao.id == 1} ? 'badge bg-info' : 'badge bg-secondary'"
+                                          class="badge">
+                                        <span th:text="${lotacao.tipoLotacao.descricao}"></span>
+                                    </span>
+                                    <span th:if="${lotacao.tipoLotacao == null}" class="text-muted">-</span>
+                                </td>
+                                <td>
+                                    <div class="btn-group btn-group-sm" role="group">
+                                        <button class="btn btn-outline-primary"
+                                                th:onclick="'openModal(\'' + @{/lotacao/editar/{id}(id=${lotacao.id})} + '\')'"
+                                                title="Editar lotação">
+                                            <i class="fas fa-edit"></i>
+                                        </button>
+                                        <a th:href="@{/lotacao/excluir/{id}(id=${lotacao.id})}" 
+                                        class="btn btn-outline-danger"
+                                        title="Excluir lotação"
+                                        onclick="return confirm('Tem certeza que deseja excluir esta lotação?')">
+                                            <i class="fas fa-trash"></i>
+                                        </a>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Versão Mobile (Cards) -->
+            <div class="d-md-none">
+                <div class="row g-3">
+                    <div th:each="lotacao : ${lotacoes}" class="col-12">
+                        <div class="card mobile-curso-card h-100">
+                            <div class="card-body p-3">
+                                <div class="d-flex justify-content-between align-items-start mb-2">
+                                    <h5 class="card-title text-primary mb-0" th:text="${lotacao.nome}"></h5>
+                                    <small class="text-muted fw-bold" th:text="'ID: ' + ${lotacao.id}"></small>
+                                </div>
+                                
+                                <div class="row g-2 mb-2">
+                                    <div class="col-6">
+                                        <small class="text-muted"><i class="fas fa-tag me-1"></i>Tipo:</small>
+                                        <div>
+                                            <span th:if="${lotacao.tipoLotacao}" 
+                                                  th:classappend="${lotacao.tipoLotacao.id == 1} ? 'badge bg-info' : 'badge bg-secondary'"
+                                                  class="badge">
+                                                <span th:text="${lotacao.tipoLotacao.descricao}"></span>
+                                            </span>
+                                            <span th:if="${lotacao.tipoLotacao == null}" class="text-muted">-</span>
+                                        </div>
+                                    </div>
+                                    <div class="col-6">
+                                        <small class="text-muted"><i class="fas fa-map-marker-alt me-1"></i>Cidade:</small>
+                                        <div>
+                                            <span th:if="${lotacao.cidade}" 
+                                                  class="fw-bold" 
+                                                  th:text="${lotacao.cidade}"></span>
+                                            <span th:if="${lotacao.cidade == null}" class="text-muted">-</span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="row g-2 mb-2">
+                                    <div class="col-12">
+                                        <small class="text-muted"><i class="fas fa-location-dot me-1"></i>Endereço:</small>
+                                        <div th:text="${lotacao.endereco}"></div>
+                                    </div>
+                                </div>
+
+                                <div class="d-grid gap-2 pt-3 border-top mobile-actions">
+                                    <button class="btn btn-sm btn-outline-primary"
+                                            th:onclick="'openModal(\'' + @{/lotacao/editar/{id}(id=${lotacao.id})} + '\')'">
+                                        <i class="fas fa-edit me-2"></i>Editar
+                                    </button>
+                                    <a th:href="@{/lotacao/excluir/{id}(id=${lotacao.id})}" 
+                                       class="btn btn-sm btn-outline-danger"
+                                       onclick="return confirm('Tem certeza que deseja excluir esta lotação?')">
+                                        <i class="fas fa-trash me-2"></i>Excluir
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Estado Vazio -->
+        <div th:if="${lotacoes == null or lotacoes.empty}" class="text-center py-5 empty-cursos-state">
+            <i class="fas fa-building fa-3x text-muted mb-3"></i>
+            <h4 class="text-muted h5 h4-md">Nenhuma lotação cadastrada</h4>
+            <p class="text-muted mb-3">Clique em "Nova Lotação" para adicionar a primeira lotação.</p>
+        </div>
+    </div>
+</div>
+
+<!-- Script para funcionalidades -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+
+    // Tooltips para melhorar acessibilidade
+    if (typeof bootstrap !== 'undefined') {
+        const tooltipTriggerList = [].slice.call(document.querySelectorAll('[title]'));
+        tooltipTriggerList.map(function(tooltipTriggerEl) {
+            return new bootstrap.Tooltip(tooltipTriggerEl);
+        });
+    }
+
+    // Confirmação para exclusão
+    const deleteButtons = document.querySelectorAll('a[href*="/lotacao/excluir/"]');
+    deleteButtons.forEach(button => {
+        button.addEventListener('click', function(e) {
+            if (!confirm('Tem certeza que deseja excluir esta lotação?')) {
+                e.preventDefault();
+            }
+        });
+    });
+});
+</script>

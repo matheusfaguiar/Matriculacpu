@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Confirmação de Matrícula</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+<div th:fragment="content" class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow-sm border-0">
+                <div class="card-header bg-success text-white text-center py-3">
+                    <h4 class="mb-0"><i class="fas fa-check-circle me-2"></i>Confirmação de Matrícula</h4>
+                </div>
+                <div class="card-body p-4">
+                    <!-- Mensagem de sucesso -->
+                    <div class="text-center mb-4">
+                        <i class="fas fa-check-circle text-success fa-4x mb-3"></i>
+                        <h3 class="text-success">Matrícula Realizada com Sucesso!</h3>
+                        <p class="text-muted">Um email de confirmação será enviada para sua caixa de entrada.</p>
+                    </div>
+
+                    <!-- Dados da Matrícula -->
+                    <div class="card bg-light mb-4">
+                        <div class="card-header bg-light">
+                            <h5 class="mb-0"><i class="fas fa-info-circle me-2"></i>Dados da Matrícula</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <strong>Data da Matrícula:</strong><br>
+                                    <span th:text="${#temporals.format(matricula.dataEfetivacao, 'dd/MM/yyyy HH:mm:ss')}" 
+                                          class="text-primary fw-bold">
+                                    </span>
+                                </div>
+                            </div>
+                            
+                            <div class="row">
+                                <div class="col-md-12 mb-3">
+                                    <strong>Nome do Aluno:</strong><br>
+                                    <span th:text="${matricula.usuario.nomeExibicao}" class="fw-bold"></span>
+                                </div>
+                            </div>
+                            
+                            <div class="row">
+                                <div class="col-12 mb-3">
+                                    <strong>Curso:</strong><br>
+                                    <span th:text="${matricula.curso.nomeExibicao}" class="fw-bold text-primary"></span>
+                                </div>
+                            </div>
+                            
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <strong>Horário:</strong><br>
+                                    <span th:text="${matricula.curso.horario ?: 'A definir'}" class="fw-bold"></span>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <strong>Período:</strong><br>
+                                    <span th:text="${matricula.curso.periodo ?: 'A definir'}" class="fw-bold"></span>
+                                </div>
+                            </div>
+                            
+                            <div th:if="${matricula.curso.lotacao.nome}" class="row">
+                                <div class="col-12 mb-3">
+                                    <strong>Local:</strong><br>
+                                    <span th:text="${matricula.curso.lotacao.endereco}" class="fw-bold"></span>
+                                </div>
+                            </div>
+                            
+                        </div>
+                    </div>
+
+                    <!-- Informações Importantes -->
+                    <div class="alert alert-info">
+                        <h6><i class="fas fa-exclamation-circle me-2"></i>Informações Importantes</h6>
+                        <ul class="mb-0">
+                            <li>Compareça à sala ParáPaz no dia de início do curso, com antecedência de pelo menos 30 minutos.</li>
+                            <li>O certificado de conclusão ficará disponível na <a th:href="@{/matricula/minhas-matriculas}">página de acompanhamento</a> após a conclusão do curso.</li>
+                        </ul>
+                    </div>
+
+                    <!-- Botões de Ação -->
+                    <div class="d-flex flex-column flex-md-row justify-content-center gap-3 mt-4">
+                        <a th:href="@{/matricula/minhas-matriculas}" class="btn btn-primary">
+                            <i class="fas fa-list me-2"></i>Minhas Matrículas
+                        </a>
+                        <a th:href="@{/}" class="btn btn-outline-secondary">
+                            <i class="fas fa-home me-2"></i>Página Inicial
+                        </a>                        
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Scripts para melhorar a experiência -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Adiciona animação de confirmação
+    const checkIcon = document.querySelector('.fa-check-circle');
+    if (checkIcon) {
+        checkIcon.style.transform = 'scale(0)';
+        setTimeout(() => {
+            checkIcon.style.transition = 'transform 0.5s ease-out';
+            checkIcon.style.transform = 'scale(1)';
+        }, 100);
+    }
+    
+
+});
+</script>
+</body>
+</html>

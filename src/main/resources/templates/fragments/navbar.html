@@ -1,0 +1,75 @@
+    <!DOCTYPE html>
+    <html xmlns:th="http://www.thymeleaf.org">
+    <body>
+    <nav th:fragment="navbar" class="navbar navbar-expand-lg navbar-dark bg-primary fixed-top">
+        <div class="container-fluid">
+            <!-- Marca -->
+            <a class="navbar-brand" th:href="@{/}">
+                <i class="fas fa-rocket me-2"></i>Matrícula CPU
+            </a>
+
+            <!-- Botão do menu colapsável no mobile -->
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                    <li class="nav-item" th:if="${usuarioLogado != null}">
+                        <a class="nav-link" th:href="@{/matricula/minhas-matriculas}">
+                            <i class="fas fa-graduation-cap  me-1"></i>Minhas Matrículas
+                        </a>
+                    </li>
+
+                    <!-- Link Cursos (perfil < 3, verifica null) -->
+                    <li class="nav-item" th:if="${usuarioLogado != null and usuarioLogado.perfil != null and usuarioLogado.perfil.id < 3}">
+                        <a class="nav-link" th:href="@{/curso}">    
+                            <i class="fas fa-book me-1"></i>Cursos
+                        </a>
+                    </li>
+
+                    <!-- Dropdown Configuração (apenas admin, perfil.id == 1) -->
+                    <li class="nav-item dropdown" th:if="${usuarioLogado != null and usuarioLogado.perfil != null and usuarioLogado.perfil.id == 1}">
+                        <a class="nav-link dropdown-toggle" href="#" id="configDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="fas fa-cog"></i> Configuração
+                        </a>
+                        <ul class="dropdown-menu" aria-labelledby="configDropdown">
+                            <li><a class="dropdown-item" th:href="@{/lotacao}">Lotações</a></li>
+                            <li><a class="dropdown-item" th:href="@{/matricula}">Matrículas</a></li>
+                            <li><a class="dropdown-item" th:href="@{/perfil}">Perfis</a></li>
+                            <li><a class="dropdown-item" th:href="@{/tipo-curso}">Tipos de Cursos</a></li>
+                            <li><a class="dropdown-item" th:href="@{/tipo-lotacao}">Tipos de Lotações</a></li>
+                            <li><a class="dropdown-item" th:href="@{/usuario}">Usuários</a></li>
+                        </ul>
+                    </li>
+                </ul>
+
+                <!-- Usuário à direita -->
+                <div class="d-flex align-items-center" th:if="${usuarioLogado != null}">
+                    <div class="dropdown">
+                        <a class="d-flex align-items-center text-white text-decoration-none dropdown-toggle" 
+                        href="#" role="button" data-bs-toggle="dropdown">
+                            <span th:text="${userName != null ? userName : 'Usuário'}" class="me-2"></span>
+                            <img th:src="${userPhoto != null ? userPhoto : '/img/default-avatar.png'}" 
+                                th:alt="${userName != null ? userName : 'Usuário'}"
+                                referrerpolicy="no-referrer"
+                                style="width: 35px; height: 35px; border-radius: 50%; object-fit: cover;">
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end">
+                            <li th:if="${usuarioLogado.perfil != null}">
+                                <a class="dropdown-item"
+                                th:href="@{/usuario/completar-cadastro}"
+                                th:text="'Perfil: ' + ${usuarioLogado.perfil.descricao}">
+                                </a>
+                            </li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" th:href="@{/logout}">Logout</a></li>
+                        </ul>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </nav>
+    </body>
+    </html>

@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta charset="UTF-8">
+    <style>
+        body { 
+            font-family: 'Arial', sans-serif; 
+            line-height: 1.6; 
+            color: #333; 
+            margin: 0; 
+            padding: 0; 
+            background-color: #f9f9f9;
+        }
+        .container { 
+            max-width: 600px; 
+            margin: 0 auto; 
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .header { 
+            background: #1976D2; 
+            color: white; 
+            padding: 30px 20px; 
+            text-align: center; 
+        }
+        .header h1 {
+            margin: 0;
+            font-size: 24px;
+        }
+        .content { 
+            padding: 30px; 
+        }
+        .welcome-badge {
+            text-align: center;
+            margin-bottom: 25px;
+        }
+        .welcome-badge .icon {
+            font-size: 48px;
+            color: #1976D2;
+            margin-bottom: 15px;
+        }
+        .welcome-badge h2 {
+            color: #1976D2;
+            margin: 0 0 10px 0;
+            font-size: 22px;
+        }
+        .info-card {
+            background: #f8f9fa;
+            border-left: 4px solid #1976D2;
+            padding: 20px;
+            border-radius: 4px;
+            margin: 25px 0;
+        }
+        .info-card h3 {
+            margin: 0 0 15px 0;
+            color: #1976D2;
+            font-size: 18px;
+        }
+        .detail-row {
+            margin-bottom: 12px;
+            display: flex;
+        }
+        .detail-label {
+            font-weight: bold;
+            min-width: 120px;
+            color: #555;
+        }
+        .detail-value {
+            color: #333;
+            flex: 1;
+        }
+        .features {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+            margin: 25px 0;
+        }
+        .feature {
+            background: #e3f2fd;
+            padding: 15px;
+            border-radius: 6px;
+            text-align: center;
+            text-decoration: none; /* Remove sublinhado dos links */
+            color: inherit; /* Mantém a cor do texto */
+            display: block;
+        }
+        .feature:hover {
+            background: #bbdefb; /* Efeito hover suave */
+            text-decoration: none; /* Garante que não sublinhe no hover */
+        }
+        .feature-icon {
+            font-size: 24px;
+            color: #1976D2;
+            margin-bottom: 10px;
+        }
+        .feature h4 {
+            margin: 0 0 8px 0;
+            color: #1976D2;
+            font-size: 16px;
+        }
+        .feature p {
+            margin: 0;
+            font-size: 14px;
+            color: #555;
+            /* ✅ ESTILO APENAS PARA OS PARÁGRAFOS DAS FEATURES */
+            text-decoration: none !important;
+        }
+        .footer { 
+            text-align: center; 
+            padding: 20px; 
+            background: #f1f1f1;
+            color: #666;
+            font-size: 12px;
+            border-top: 1px solid #ddd;
+        }
+        .highlight {
+            background: #1976D2;
+            color: white;
+            padding: 8px 12px;
+            border-radius: 4px;
+            font-weight: bold;
+            display: inline-block;
+        }
+        /* ✅ ESTILO APENAS PARA O TÍTULO DO HEADER */
+        .header-title-link {
+            color: inherit !important;      
+            text-decoration: none !important;
+            font-weight: inherit !important;
+        }
+        .header-title-link:hover {
+            text-decoration: underline !important;
+        }
+        /* ✅ BOTÕES DE AÇÃO */
+        .action-buttons {
+            text-align: center;
+            margin: 25px 0;
+        }
+        .action-button {
+            display: inline-block;
+            background: #1976D2;
+            color: white;
+            padding: 12px 24px;
+            text-decoration: none;
+            border-radius: 6px;
+            margin: 5px 10px;
+            font-weight: bold;
+            font-size: 14px;
+        }
+        .action-button:hover {
+            background: #1565C0;
+            text-decoration: none;
+            color: white;
+        }
+        .action-button.secondary {
+            background: #6c757d;
+        }
+        .action-button.secondary:hover {
+            background: #5a6268;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <!-- ✅ TÍTULO ALTERADO -->
+            <h1><a th:href="${baseUrl}" class="header-title-link">MatrículaCPU - Confirmação de Cadastro</a></h1>
+            <p>Sistema de Matrícula - Fundação ParáPaz</p>
+        </div>
+        
+        <div class="content">
+            <!-- Mensagem de Boas-Vindas -->
+            <div class="welcome-badge">
+                <div class="icon">🎉</div>
+                <h2>Cadastro Confirmado com Sucesso!</h2>
+                <p>Seja bem-vindo(a) ao <strong>MatriculaCPU</strong>, <span th:text="${nomeExibicao}">Usuário</span>!</p>
+            </div>
+
+            <!-- Informações do Cadastro -->
+            <div class="info-card">
+                <h3>📋 Dados do seu Cadastro</h3>
+                
+                <div class="detail-row">
+                    <div class="detail-label">Nome:</div>
+                    <div class="detail-value" th:text="${nomeExibicao}">Nome do Usuário</div>
+                </div>
+                
+                <div class="detail-row">
+                    <div class="detail-label">Email:</div>
+                    <div class="detail-value" th:text="${emailUsuario}">usuario@email.com</div>
+                </div>
+                
+                <div class="detail-row">
+                    <div class="detail-label">Data do Cadastro:</div>
+                    <div class="detail-value" th:text="${dataCadastro}">01/01/2024 às 14:30</div>
+                </div>
+            </div>
+
+            <!-- Funcionalidades Disponíveis COM LINKS DINÂMICOS -->
+            <div class="features">
+                <a th:href="${baseUrl} + '/'" class="feature">
+                    <div class="feature-icon">📚</div>
+                    <h4>Matrícula em Cursos</h4>
+                    <!-- ✅ PARÁGRAFO DENTRO DO LINK - ESTILO AUTOMÁTICO PELO CSS .feature p -->
+                    <p>Faça sua matrícula nos cursos disponíveis da Coordenação da ParáPaz nas Usinas</p>
+                </a>
+                
+                <a th:href="${baseUrl} + '/matricula/minhas-matriculas'" class="feature">
+                    <div class="feature-icon">📱</div>
+                    <h4>Acompanhamento</h4>
+                    <!-- ✅ PARÁGRAFO DENTRO DO LINK - ESTILO AUTOMÁTICO PELO CSS .feature p -->
+                    <p>Acompanhe suas matrículas e certificados em tempo real</p>
+                </a>
+            </div>
+
+            <!-- Informações Importantes -->
+            <div style="background: #e8f5e8; padding: 20px; border-radius: 6px; margin: 25px 0;">
+                <h4 style="margin: 0 0 15px 0; color: #2E7D32;">💡 Próximos Passos</h4>
+                <ul style="margin: 0; padding-left: 20px;">
+                    <li>Explore os cursos disponíveis na página inicial</li>
+                    <li>Complete o questionário de matrícula quando se inscrever em um curso</li>
+                    <li>Acompanhe o status das suas matrículas na seção "Minhas Matrículas"</li>
+                    <li>Mantenha seus dados sempre atualizados</li>
+                    <li>Em caso de dúvidas, entre em contato com a coordenação do ParáPaz</li>
+                </ul>
+            </div>
+
+            <p style="text-align: center; color: #666; margin-top: 30px;">
+                <em>Este é um email automático de confirmação de cadastro.</em>
+            </p>
+        </div>
+        
+        <div class="footer">
+            <p><strong>Fundação ParáPaz</strong></p>
+            <p>Coordenação da ParáPaz nas Usinas</p>
+            <p>Email automático - MatriculaCPU</p>
+            <!-- ✅ LINK NO RODAPÉ -->
+            <p><a th:href="${baseUrl}">Acessar o Sistema</a></p>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,182 @@
+<div th:fragment="content">
+    <div class="container mt-3 mt-md-4">
+        <!-- Cabeçalho -->
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h3 class="h5 h4-md mb-0"><i class="fas fa-users me-2"></i>Perfis</h3>
+            <button class="btn btn-light btn-sm" onclick="openModal('/perfil/novo')">
+                <i class="fas fa-plus me-1"></i>Novo Perfil
+            </button>
+        </div>
+
+        <!-- Mensagens de feedback -->
+        <div th:if="${successMessage}" class="alert alert-success alert-dismissible fade show" role="alert">
+            <span th:text="${successMessage}"></span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+        
+        <div th:if="${errorMessage}" class="alert alert-danger alert-dismissible fade show" role="alert">
+            <span th:text="${errorMessage}"></span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+
+        <!-- Conteúdo apenas quando há perfis -->
+        <div th:if="${perfis != null and not perfis.empty}">
+            <!-- Contador -->
+            <div class="row mb-3">
+                <div class="col-12">
+                    <div class="text-muted small">
+                        <i class="fas fa-info-circle me-1"></i>
+                        <span th:text="${perfis.size()}"></span> perfis cadastrados
+                    </div>
+                </div>
+            </div>
+
+            <!-- Versão Desktop (Table) -->
+            <div class="d-none d-md-block">
+                <div class="table-responsive">
+                    <table id="tabelaPerfis" class="datatable display table table-striped table-hover align-middle" style="width:100%">
+                        <thead class="table-primary">
+                            <tr>
+                                <th><i class="fas fa-hashtag me-2"></i>ID</th>
+                                <th><i class="fas fa-id-card me-2"></i>Descrição</th>
+                                <th><i class="fas fa-cogs me-2"></i>Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:each="perfil : ${perfis}">
+                                <td th:text="${perfil.id}" class="fw-bold text-muted"></td>
+                                <td>
+                                    <div class="fw-bold text-primary" th:text="${perfil.descricao}"></div>
+                                    <!-- Badge indicando o tipo de perfil -->
+                                    <span th:if="${perfil.id == 1}" class="badge bg-danger mt-1">
+                                        <i class="fas fa-shield-alt me-1"></i>Administrador
+                                    </span>
+                                    <span th:if="${perfil.id == 2}" class="badge bg-warning mt-1">
+                                        <i class="fas fa-user-tie me-1"></i>Técnico
+                                    </span>
+                                    <span th:if="${perfil.id == 3}" class="badge bg-info mt-1">
+                                        <i class="fas fa-user-graduate me-1"></i>Aluno
+                                    </span>
+                                    <span th:if="${perfil.id > 3}" class="badge bg-secondary mt-1">
+                                        <i class="fas fa-user me-1"></i>Personalizado
+                                    </span>
+                                </td>
+                                <td>
+                                    <div class="btn-group btn-group-sm" role="group">
+                                        <!-- Botão Editar CORRIGIDO -->
+                                        <button class="btn btn-outline-primary"
+                                                th:onclick="'openModal(\'' + @{/perfil/editar/{id}(id=${perfil.id})} + '\')'"
+                                                title="Editar perfil">
+                                            <i class="fas fa-edit"></i>
+                                        </button>
+                                        
+                                        <!-- Botão Excluir (desabilitado para perfis do sistema) -->
+                                        <button th:if="${perfil.id > 3}"
+                                                class="btn btn-outline-danger"
+                                                th:onclick="'excluirPerfil(' + ${perfil.id} + ')'"
+                                                title="Excluir perfil">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                        <button th:if="${perfil.id <= 3}"
+                                                class="btn btn-outline-secondary"
+                                                disabled
+                                                title="Perfil do sistema - não pode ser excluído">
+                                            <i class="fas fa-lock"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Versão Mobile (Cards) -->
+            <div class="d-md-none">
+                <div class="row g-3">
+                    <div th:each="perfil : ${perfis}" class="col-12">
+                        <div class="card mobile-curso-card h-100">
+                            <div class="card-body p-3">
+                                <div class="d-flex justify-content-between align-items-start mb-2">
+                                    <h5 class="card-title text-primary mb-0" th:text="${perfil.descricao}"></h5>
+                                    <small class="text-muted fw-bold" th:text="'ID: ' + ${perfil.id}"></small>
+                                </div>
+                                
+                                <!-- Badge do tipo de perfil -->
+                                <div class="mb-3">
+                                    <span th:if="${perfil.id == 1}" class="badge bg-danger">
+                                        <i class="fas fa-shield-alt me-1"></i>Administrador
+                                    </span>
+                                    <span th:if="${perfil.id == 2}" class="badge bg-warning">
+                                        <i class="fas fa-user-tie me-1"></i>Técnico
+                                    </span>
+                                    <span th:if="${perfil.id == 3}" class="badge bg-info">
+                                        <i class="fas fa-user-graduate me-1"></i>Aluno
+                                    </span>
+                                    <span th:if="${perfil.id > 3}" class="badge bg-secondary">
+                                        <i class="fas fa-user me-1"></i>Personalizado
+                                    </span>
+                                </div>
+
+                                <div class="d-grid gap-2 pt-3 border-top mobile-actions">
+                                    <!-- Botão Editar CORRIGIDO -->
+                                    <button class="btn btn-sm btn-outline-primary"
+                                            th:onclick="'openModal(\'' + @{/perfil/editar/{id}(id=${perfil.id})} + '\')'">
+                                        <i class="fas fa-edit me-2"></i>Editar Perfil
+                                    </button>
+                                    
+                                    <!-- Botão Excluir (desabilitado para perfis do sistema) -->
+                                    <button th:if="${perfil.id > 3}"
+                                            class="btn btn-sm btn-outline-danger"
+                                            th:onclick="'excluirPerfil(' + ${perfil.id} + ')'">
+                                        <i class="fas fa-trash me-2"></i>Excluir Perfil
+                                    </button>
+                                    <button th:if="${perfil.id <= 3}"
+                                            class="btn btn-sm btn-outline-secondary"
+                                            disabled>
+                                        <i class="fas fa-lock me-2"></i>Perfil do Sistema
+                                    </button>
+                                </div>
+
+                                <!-- Mensagem para perfis do sistema -->
+                                <div th:if="${perfil.id <= 3}" class="mt-2">
+                                    <small class="text-muted">
+                                        <i class="fas fa-info-circle me-1"></i>
+                                        Perfil do sistema - não pode ser excluído
+                                    </small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Estado Vazio -->
+        <div th:if="${perfis == null or perfis.empty}" class="text-center py-5 empty-cursos-state">
+            <i class="fas fa-users fa-3x text-muted mb-3"></i>
+            <h4 class="text-muted h5 h4-md">Nenhum perfil cadastrado</h4>
+            <p class="text-muted mb-3">Clique em "Novo Perfil" para adicionar o primeiro perfil.</p>
+        </div>
+    </div>
+</div>
+
+<!-- Script para funcionalidades -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Tooltips para melhorar acessibilidade
+    if (typeof bootstrap !== 'undefined') {
+        const tooltipTriggerList = [].slice.call(document.querySelectorAll('[title]'));
+        tooltipTriggerList.map(function(tooltipTriggerEl) {
+            return new bootstrap.Tooltip(tooltipTriggerEl);
+        });
+    }
+});
+
+// Função para excluir perfil com confirmação
+function excluirPerfil(perfilId) {
+    if (confirm('Tem certeza que deseja excluir este perfil?\n\nEsta ação não pode ser desfeita.')) {
+        window.location.href = '/perfil/excluir/' + perfilId;
+    }
+}
+</script>

@@ -1,0 +1,164 @@
+<div th:fragment="formFragment">
+  <div class="modal-header">
+    <h5 class="modal-title"
+        th:text="${curso.id != null} ? 'Editar Curso' : 'Novo Curso'"></h5>
+    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
+  </div>
+
+  <div class="modal-body">
+    <form th:action="@{/curso/salvar}" th:object="${curso}" method="post" class="needs-validation" novalidate>
+      <input type="hidden" th:field="*{id}" id="cursoId" />
+      
+      <!-- Token CSRF -->
+      <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" id="csrfToken" />
+
+      <!-- Nome -->
+      <div class="mb-3">
+        <label for="tipoCurso" class="form-label">Curso <span class="text-danger">*</span></label>
+          <select class="form-select" id="tipoCurso" th:field="*{tipoCurso.id}" required
+                  th:classappend="${#fields.hasErrors('tipoCurso')} ? 'is-invalid' : ''">
+            <option value="">Selecione um tipo de curso...</option>
+            <option th:each="tipo : ${tiposCurso}"
+                    th:value="${tipo.id}"
+                    th:text="${tipo.nome}"
+                    th:selected="${curso.tipoCurso != null and curso.tipoCurso.id == tipo.id}">
+            </option>
+          </select>
+          <div th:if="${#fields.hasErrors('tipoCurso')}" class="invalid-feedback">
+            <span th:errors="*{tipoCurso}"></span>
+          </div>
+        
+      </div>
+
+      <!-- Tipo de Curso / Local -->
+      <div class="row g-3 mb-3">
+        <div class="col-12 col-md-6">
+          <label for="nome" class="form-label">Descrição <span class="text-danger">*</span></label>
+          <input type="text" class="form-control" id="nome" th:field="*{nome}" required 
+                th:classappend="${#fields.hasErrors('nome')} ? 'is-invalid' : ''" />
+          <div th:if="${#fields.hasErrors('nome')}" class="invalid-feedback">
+            <span th:errors="*{nome}"></span>
+          </div>
+        </div>
+        
+        <div class="col-12 col-md-6">
+          <label for="lotacao" class="form-label">Local <span class="text-danger">*</span></label>
+          <select class="form-select" id="lotacao" th:field="*{lotacao.id}" required
+                  th:classappend="${#fields.hasErrors('lotacao')} ? 'is-invalid' : ''"
+                  th:disabled="${lotacaoFixa != null and lotacaoFixa}">
+            <option value="">Selecione uma lotação...</option>
+            <option th:each="l : ${lotacoes}"
+                    th:value="${l.id}"
+                    th:text="${l.nome}"
+                    th:selected="${curso.lotacao != null and curso.lotacao.id == l.id}">
+            </option>
+          </select>
+          <div th:if="${#fields.hasErrors('lotacao')}" class="invalid-feedback">
+            <span th:errors="*{lotacao}"></span>
+          </div>
+          <div th:if="${lotacaoFixa != null and lotacaoFixa}" class="form-text text-muted">
+            <small><i class="fas fa-info-circle"></i> Sua lotação está definida automaticamente</small>
+          </div>
+        </div>
+      </div>
+
+      <!-- CH / Vagas / Data Início / Data Fim -->
+      <div class="row g-3 mb-3">
+        <div class="col-6 col-md-3">
+          <label for="cargaHoraria" class="form-label">Carga Horária <span class="text-danger">*</span></label>
+          <input type="number" class="form-control" id="cargaHoraria" th:field="*{cargaHoraria}" required
+                 th:classappend="${#fields.hasErrors('cargaHoraria')} ? 'is-invalid' : ''" min="1" />
+          <div th:if="${#fields.hasErrors('cargaHoraria')}" class="invalid-feedback">
+            <span th:errors="*{cargaHoraria}"></span>
+          </div>
+        </div>
+        
+        <div class="col-6 col-md-3">
+          <label for="vagas" class="form-label">Vagas <span class="text-danger">*</span></label>
+          <input type="number" class="form-control" id="vagas" th:field="*{vagas}" required
+                 th:classappend="${#fields.hasErrors('vagas')} ? 'is-invalid' : ''" min="0" />
+          <div th:if="${#fields.hasErrors('vagas')}" class="invalid-feedback">
+            <span th:errors="*{vagas}"></span>
+          </div>
+        </div>
+        
+        <div class="col-12 col-md-3">
+          <label for="dataInicio" class="form-label">Data Início <span class="text-danger">*</span></label>
+          <input type="date" class="form-control" id="dataInicio" th:field="*{dataInicio}" required
+                 th:classappend="${#fields.hasErrors('dataInicio')} ? 'is-invalid' : ''" />
+          <div th:if="${#fields.hasErrors('dataInicio')}" class="invalid-feedback">
+            <span th:errors="*{dataInicio}"></span>
+          </div>
+        </div>
+        
+        <div class="col-12 col-md-3">
+          <label for="dataFim" class="form-label">Data Fim <span class="text-danger">*</span></label>
+          <input type="date" class="form-control" id="dataFim" th:field="*{dataFim}" required
+                 th:classappend="${#fields.hasErrors('dataFim')} ? 'is-invalid' : ''" />
+          <div th:if="${#fields.hasErrors('dataFim')}" class="invalid-feedback">
+            <span th:errors="*{dataFim}"></span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Horário / Instrutor -->
+      <div class="row g-3 mb-3">
+        <div class="col-12 col-md-6">
+          <label for="horario" class="form-label">Horário</label>
+          <input type="text" class="form-control" id="horario" th:field="*{horario}" 
+                 placeholder="Ex: Seg/Qua 09:30 às 11:30"
+                 th:classappend="${#fields.hasErrors('horario')} ? 'is-invalid' : ''" />
+          <div th:if="${#fields.hasErrors('horario')}" class="invalid-feedback">
+            <span th:errors="*{horario}"></span>
+          </div>
+        </div>
+        
+        <div class="col-12 col-md-6">
+          <label for="instrutor" class="form-label">Instrutor</label>
+          <input type="text" class="form-control" id="instrutor" th:field="*{instrutor}"
+                 th:classappend="${#fields.hasErrors('instrutor')} ? 'is-invalid' : ''" />
+          <div th:if="${#fields.hasErrors('instrutor')}" class="invalid-feedback">
+            <span th:errors="*{instrutor}"></span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Matriz Curricular -->
+      <div class="mb-3">
+        <label for="matrizCurricular" class="form-label">Matriz Curricular</label>
+        <textarea class="form-control rich-text" id="matrizCurricular"
+                  th:field="*{matrizCurricular}" rows="8"
+                  th:classappend="${#fields.hasErrors('matrizCurricular')} ? 'is-invalid' : ''"></textarea>
+        <div th:if="${#fields.hasErrors('matrizCurricular')}" class="invalid-feedback">
+          <span th:errors="*{matrizCurricular}"></span>
+        </div>
+      </div>
+
+      <!-- Mensagens de Erro Gerais -->
+      <div th:if="${#fields.hasErrors('*')}" class="alert alert-danger">
+        <h6 class="alert-heading">Corrija os seguintes erros:</h6>
+        <ul class="mb-0">
+          <li th:each="err : ${#fields.errors('*')}" th:text="${err}"></li>
+        </ul>
+      </div>
+
+      <!-- Mensagem de Erro Específica -->
+      <div th:if="${error != null}" class="alert alert-danger">
+        <span th:text="${error}"></span>
+      </div>
+
+      <!-- Rodapé -->
+      <div class="modal-footer flex-wrap gap-2">
+        <button type="button" class="btn btn-primary btnPreviewCertificado w-100 w-sm-auto">
+          <i class="fas fa-eye me-1"></i>Preview do Certificado
+        </button>
+        <button type="submit" class="btn btn-success w-100 w-sm-auto">
+          <i class="fas fa-save me-1"></i>Salvar
+        </button>
+        <button type="button" class="btn btn-secondary w-100 w-sm-auto" data-bs-dismiss="modal">
+          <i class="fas fa-times me-1"></i>Cancelar
+        </button>
+      </div>
+    </form>
+  </div>
+</div>

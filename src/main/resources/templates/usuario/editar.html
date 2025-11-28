@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<!-- Fragmento com APENAS o conteúdo do modal (sem a estrutura do modal) -->
+<div th:fragment="formFragment">
+  <div class="modal-header">
+    <h5 class="modal-title">Editar Usuário</h5>
+    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+  </div>
+  
+  <form th:action="@{/usuario/salvar}" th:object="${usuario}" method="post">
+    <input type="hidden" th:field="*{id}" />
+    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+    
+    <div class="modal-body">
+      <!-- Inclui os campos passando os 4 parâmetros necessários -->
+      <div th:replace="~{usuario/campos-usuario :: campos-usuario(
+        perfis=${perfis},
+        canEditPerfil=${canEditPerfil},
+        modalId='modalGlobal',
+        lotacoesDisponiveis=${lotacoesDisponiveis}
+      )}"></div>
+    </div>
+  
+    <div class="modal-footer">
+      <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+      <button type="submit" class="btn btn-primary">Salvar Alterações</button>
+    </div>
+  </form>
+</div>
+
+</html>

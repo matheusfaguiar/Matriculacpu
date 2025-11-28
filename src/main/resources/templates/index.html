@@ -1,0 +1,229 @@
+<!-- src/main/resources/templates/index.html -->
+<div th:fragment="content" class="container mt-3 mt-md-5 fade-in-up">
+
+  <!-- Cabeçalho -->
+  <div th:if="${usuarioLogado == null}" id="login-section" class="text-center mb-4 mb-md-5">
+    <h1 class="text-primary mb-3 h4 h2-md"><i class="fas fa-graduation-cap me-2"></i>Cursos da Fundação ParáPaz nas Usinas</h1>
+    <p class="lead mb-4">
+      Para realizar sua inscrição em um dos cursos abaixo, faça login com sua conta Google.
+    </p>
+    <a href="/auth/google" class="btn btn-primary rounded-pill px-4 px-md-5 py-2 py-md-3">
+      <i class="bi bi-google me-2"></i>Login com Google
+    </a>
+  </div>
+
+  <div th:if="${usuarioLogado != null}" class="text-center mb-4 mb-md-5">
+    <h1 class="text-primary mb-3 h4 h2-md"><i class="fas fa-graduation-cap me-2"></i>Cursos da Fundação ParáPaz nas Usinas</h1>
+    <p class="lead text-success mb-0">
+      Bem-vindo, <b th:text="${usuarioLogado.nomeExibicao}"></b>!
+    </p>
+  </div>
+
+  <hr class="mb-4 mb-md-5"/>
+
+  <!-- Conteúdo apenas quando há cursos -->
+  <div th:if="${cursos != null and not cursos.empty}">
+    <!-- Filtro de Local -->
+    <div class="row mb-4">
+      <div class="col-12 col-md-6">
+        <label for="filtroLocal" class="form-label fw-bold"><i class="fas fa-filter me-2"></i>Filtrar por Localidade:</label>
+        <select id="filtroLocal" class="form-select filtro-local">
+          <option value="">Todas as localidades</option>
+          <option th:each="lotacao : ${lotacoes}"
+                  th:value="${lotacao.nome}"
+                  th:text="${lotacao.nome}">
+          </option>
+        </select>
+      </div>
+    </div>
+
+    <!-- Título da Seção de Cursos -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+      <h3 class="h5 h4-md mb-0"><i class="fas fa-book me-2"></i>Cursos Disponíveis</h3>
+    </div>
+
+    <!-- Versão Desktop (Table) -->
+    <div class="d-none d-md-block">
+      <div class="table-responsive">
+        <table id="tabelaCursos" class="datatable display table table-striped table-hover align-middle" style="width:100%">
+          <thead class="table-primary">
+            <tr>
+              <th><i class="fas fa-bookmark me-2"></i>Nome</th>
+              <th><i class="fas fa-map-marker-alt me-2"></i>Local</th>
+              <th><i class="fas fa-users me-2"></i>Vagas</th>
+              <th><i class="fas fa-clock me-2"></i>Horário</th>
+              <th><i class="fas fa-calendar-alt me-2"></i>Data Início</th>
+              <th><i class="fas fa-calendar-times me-2"></i>Data Fim</th>
+              <th th:if="${usuarioLogado != null}" width="150"><i class="fas fa-cogs me-2"></i>Ações</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr th:each="curso : ${cursos}">
+              <td th:text="${curso.nomeExibicao}" class="fw-bold text-primary"></td>
+              <td th:text="${curso.lotacao.nome}"></td>
+              <td>
+                <span th:classappend="${curso.vagas == 0} ? 'badge bg-danger' : 'badge bg-success'" class="badge">
+                  <i class="fas fa-user-friends me-1"></i>
+                  <span th:text="${curso.vagas}"></span>
+                </span>
+              </td>
+              <td th:text="${curso.horario}"></td>
+              <td th:text="${#temporals.format(curso.dataInicio, 'dd/MM/yyyy')}"></td>
+              <td th:text="${#temporals.format(curso.dataFim, 'dd/MM/yyyy')}"></td>
+              
+              <!-- Coluna de Ações - Desktop -->
+              <td th:if="${usuarioLogado != null}">
+                <div class="btn-group btn-group-sm" role="group">
+                  <!-- Botão Inscrever-se (apenas se não tem matrícula) -->
+                  <a th:if="${matriculaPorCurso == null or !matriculaPorCurso.containsKey(curso.id)}"
+                     th:href="@{/matricula/nova(cursoId=${curso.id})}" 
+                     class="btn btn-success"
+                     title="Inscrever-se no curso">
+                    <i class="fas fa-user-plus me-1"></i>Inscrever
+                  </a>
+                  
+                  <!-- Botão Continuar Inscrição (se tem matrícula PENDENTE) -->
+                  <a th:if="${matriculaPorCurso != null and matriculaPorCurso.containsKey(curso.id) and 
+                             matriculaPorCurso.get(curso.id).status == 'PENDENTE'}"
+                     th:href="@{/matricula/nova(cursoId=${matriculaPorCurso.get(curso.id).curso.id})}" 
+                     class="btn btn-warning"
+                     title="Continuar inscrição">
+                    <i class="fas fa-play-circle me-1"></i>Continuar
+                  </a>
+                  
+                  <!-- Botão Detalhes (se tem matrícula com status diferente de PENDENTE) -->
+                  <a th:if="${matriculaPorCurso != null and matriculaPorCurso.containsKey(curso.id) and 
+                             matriculaPorCurso.get(curso.id).status != 'PENDENTE'}"
+                     th:href="@{/matricula/confirmacao?matriculaId={id}(id=${matriculaPorCurso.get(curso.id).id})}" 
+                     class="btn btn-info"
+                     title="Ver detalhes da matrícula">
+                    <i class="fas fa-eye me-1"></i>Detalhes
+                  </a>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Versão Mobile (Cards) -->
+    <div class="d-md-none">
+      <div class="row g-3">
+        <div th:each="curso : ${cursos}" class="col-12">
+          <div class="card mobile-curso-card h-100">
+            <div class="card-body">
+              <h5 class="card-title text-primary mb-3" th:text="${curso.nomeExibicao}"></h5>
+              
+              <div class="row g-2 mb-3">
+                <div class="col-6">
+                  <small class="text-muted"><i class="fas fa-map-marker-alt me-1"></i>Local:</small>
+                  <div class="fw-bold" th:text="${curso.lotacao.nome}"></div>
+                </div>
+                <div class="col-6">
+                  <small class="text-muted"><i class="fas fa-users me-1"></i>Vagas:</small>
+                  <div>
+                    <span th:classappend="${curso.vagas == 0} ? 'badge bg-danger' : 'badge bg-success'" class="badge">
+                      <i class="fas fa-user-friends me-1"></i>
+                      <span th:text="${curso.vagas}"></span>
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="row g-2 mb-3">
+                <div class="col-6">
+                  <small class="text-muted"><i class="fas fa-clock me-1"></i>Horário:</small>
+                  <div class="fw-bold" th:text="${curso.horario}"></div>
+                </div>
+                <div class="col-6">
+                  <small class="text-muted"><i class="fas fa-calendar-alt me-1"></i>Início:</small>
+                  <div class="fw-bold" th:text="${#temporals.format(curso.dataInicio, 'dd/MM/yyyy')}"></div>
+                </div>
+              </div>
+
+              <div class="row g-2 mb-3">
+                <div class="col-12">
+                  <small class="text-muted"><i class="fas fa-calendar-times me-1"></i>Término:</small>
+                  <div class="fw-bold" th:text="${#temporals.format(curso.dataFim, 'dd/MM/yyyy')}"></div>
+                </div>
+              </div>
+
+              <!-- Ações - Mobile -->
+              <div th:if="${usuarioLogado != null}" class="d-grid gap-2 pt-3 border-top">
+                <!-- Botão Inscrever-se (apenas se não tem matrícula) -->
+                <a th:if="${matriculaPorCurso == null or !matriculaPorCurso.containsKey(curso.id)}"
+                   th:href="@{/matricula/nova(cursoId=${curso.id})}" 
+                   class="btn btn-success">
+                  <i class="fas fa-user-plus me-2"></i>Inscrever-se
+                </a>
+                
+                <!-- Botão Continuar Inscrição (se tem matrícula PENDENTE) -->
+                <a th:if="${matriculaPorCurso != null and matriculaPorCurso.containsKey(curso.id) and 
+                           matriculaPorCurso.get(curso.id).status == 'PENDENTE'}"
+                   th:href="@{/matricula/nova(cursoId=${matriculaPorCurso.get(curso.id).curso.id})}" 
+                   class="btn btn-warning">
+                  <i class="fas fa-play-circle me-2"></i>Continuar Inscrição
+                </a>
+                
+                <!-- Botão Detalhes (se tem matrícula com status diferente de PENDENTE) -->
+                <a th:if="${matriculaPorCurso != null and matriculaPorCurso.containsKey(curso.id) and 
+                           matriculaPorCurso.get(curso.id).status != 'PENDENTE'}"
+                   th:href="@{/matricula/confirmacao?matriculaId={id}(id=${matriculaPorCurso.get(curso.id).id})}" 
+                   class="btn btn-info">
+                  <i class="fas fa-eye me-2"></i>Ver Detalhes
+                </a>
+              </div>
+
+              <!-- Mensagem para usuário não logado -->
+              <div th:if="${usuarioLogado == null}" class="alert alert-info mt-3 mb-0 py-2">
+                <small>
+                  <i class="fas fa-info-circle me-1"></i>
+                  <a href="/auth/google">Faça login para se inscrever</a>
+                </small>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Mensagem quando não há cursos -->
+  <div th:if="${cursos == null or cursos.empty}" class="text-center py-5 empty-cursos-state">
+    <i class="fas fa-book fa-3x text-muted mb-3"></i>
+    <h4 class="text-muted h5 h4-md">Nenhum curso disponível...</h4>
+    <p class="text-muted mb-3">No momento não há cursos com vagas abertas.</p>
+    <small class="text-muted">Volte em breve para conferir novas oportunidades!</small>
+  </div>
+
+</div>
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+  // Só inicializa o filtro se houver cursos
+  const filtroLocal = document.getElementById("filtroLocal");
+  const linhasDesktop = document.querySelectorAll("#tabelaCursos tbody tr");
+  const cardsMobile = document.querySelectorAll(".mobile-curso-card");
+
+  if (filtroLocal) {
+    // 🔹 Filtro dinâmico por localidade
+    filtroLocal.addEventListener("change", function () {
+      const valor = this.value.toLowerCase();
+      
+      // Filtro para versão desktop (table)
+      linhasDesktop.forEach(row => {
+        const local = row.cells[1].textContent.toLowerCase();
+        row.style.display = (!valor || local.includes(valor)) ? '' : 'none';
+      });
+      
+      // Filtro para versão mobile (cards)
+      cardsMobile.forEach(card => {
+        const localElement = card.querySelector('.card-title + .row .fw-bold');
+        const local = localElement ? localElement.textContent.toLowerCase() : '';
+        card.parentElement.style.display = (!valor || local.includes(valor)) ? '' : 'none';
+      });
+    });
+  }
+});
+</script>

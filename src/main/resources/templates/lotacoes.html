@@ -1,0 +1,23 @@
+<div th:fragment="content" class="container mt-4">
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <h2>Locais</h2>
+    <a href="#" class="btn btn-primary">Novo Local</a>
+  </div>
+
+  <table id="lotacoesTable" class="datatable display table table-striped" style="width:100%">
+    <thead>
+      <tr>
+        <th>Nome</th>
+        <th>Tipo de Local</th>
+        <th>Qtd. Cursos</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr th:each="lotacao : ${lotacoes}">
+        <td th:text="${lotacao.nome}"></td>
+        <td th:text="${lotacao.tipoLotacao != null ? lotacao.tipoLotacao.descricao : ''}"></td>
+        <td th:text="${lotacao.cursos != null ? #lists.size(lotacao.cursos) : 0}"></td>
+      </tr>
+    </tbody>
+  </table>
+</div>

@@ -1,0 +1,347 @@
+<div th:fragment="content">
+    <div class="container mt-3 mt-md-4">
+        <!-- Cabeçalho -->
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h3 class="h5 h4-md mb-0"><i class="fas fa-list me-2"></i>Matrículas</h3>
+            <button class="btn btn-light btn-sm" onclick="openModal('/matricula/novo')">
+                <i class="fas fa-plus me-1"></i>Nova Matrícula
+            </button>
+        </div>
+
+        <!-- Mensagens de feedback -->
+        <div th:if="${successMessage}" class="alert alert-success alert-dismissible fade show" role="alert">
+            <span th:text="${successMessage}"></span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+        
+        <div th:if="${errorMessage}" class="alert alert-danger alert-dismissible fade show" role="alert">
+            <span th:text="${errorMessage}"></span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+
+        <!-- Conteúdo apenas quando há matrículas -->
+        <div th:if="${matriculas != null and not matriculas.empty}">
+            <!-- Contador -->
+            <div class="row mb-3">
+                <div class="col-12">
+                    <div class="text-muted small">
+                        <i class="fas fa-info-circle me-1"></i>
+                        <span th:text="${matriculas.size()}"></span> matrículas cadastradas
+                    </div>
+                </div>
+            </div>
+
+            <!-- Versão Desktop (Table) -->
+            <div class="d-none d-md-block">
+                <div class="table-responsive">
+                    <table id="tabelaMatriculas" class="datatable display table table-striped table-hover align-middle" style="width:100%">
+                        <thead class="table-primary">
+                            <tr>
+                                <th><i class="fas fa-hashtag me-2"></i>ID</th>
+                                <th><i class="fas fa-user me-2"></i>Usuário</th>
+                                <th><i class="fas fa-book me-2"></i>Curso</th>
+                                <th><i class="fas fa-map-marker-alt me-2"></i>Local</th>
+                                <th><i class="fas fa-info-circle me-2"></i>Status</th>
+                                <th><i class="fas fa-check-circle me-2"></i>Aprovação</th>
+                                <th><i class="fas fa-certificate me-2"></i>Certificado</th>
+                                <th><i class="fas fa-cogs me-2"></i>Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:each="matricula : ${matriculas}">
+                                <td th:text="${matricula.id}" class="fw-bold text-muted"></td>
+                                <td>
+                                    <div class="fw-bold" th:text="${matricula.usuario.nome}"></div>
+                                    <small class="text-muted" th:text="${matricula.usuario.email}"></small>
+                                </td>
+                                <td>
+                                    <div class="fw-bold text-primary" th:text="${matricula.curso.nomeExibicao}"></div>
+                                    <small class="text-muted" th:text="${matricula.curso.cargaHoraria + 'h'}"></small>
+                                </td>
+                                <td th:text="${matricula.curso.lotacao.nome}"></td>
+                                <td>
+                                    <span th:classappend="${matricula.efetivada} ? 'badge bg-success' : 'badge bg-warning'"
+                                          class="badge">
+                                        <span th:text="${matricula.efetivada} ? 'Efetivada' : 'Pendente'"></span>
+                                    </span>
+                                    <div th:if="${matricula.dataEfetivacao}" class="small text-muted">
+                                        <span th:text="${#temporals.format(matricula.dataEfetivacao, 'dd/MM/yyyy')}"></span>
+                                    </div>
+                                </td>
+                                <td>
+                                    <span th:if="${matricula.alunoAprovado == null}"
+                                          class="badge bg-secondary">
+                                        <i class="fas fa-clock me-1"></i>Pendente
+                                    </span>
+                                    <span th:if="${matricula.alunoAprovado == true}"
+                                          class="badge bg-success">
+                                        <i class="fas fa-check me-1"></i>Aprovado
+                                    </span>
+                                    <span th:if="${matricula.alunoAprovado == false}"
+                                          class="badge bg-danger">
+                                        <i class="fas fa-times me-1"></i>Reprovado
+                                    </span>
+                                    <!-- Botão para aprovar/reprovar -->
+                                    <div th:if="${matricula.efetivada and matricula.alunoAprovado == null}" 
+                                         class="mt-1">
+                                        <button class="btn btn-sm btn-outline-success"
+                                                th:onclick="'aprovarMatricula(' + ${matricula.id} + ')'"
+                                                title="Aprovar aluno">
+                                            <i class="fas fa-check"></i>
+                                        </button>
+                                        <button class="btn btn-sm btn-outline-danger"
+                                                th:onclick="'reprovarMatricula(' + ${matricula.id} + ')'"
+                                                title="Reprovar aluno">
+                                            <i class="fas fa-times"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                                <td>
+                                    <span th:if="${matricula.certificadoDisponivel}"
+                                          class="badge bg-success">
+                                        <i class="fas fa-check me-1"></i>Disponível
+                                    </span>
+                                    <span th:if="${matricula.aguardandoCertificado}"
+                                          class="badge bg-warning">
+                                        <i class="fas fa-clock me-1"></i>Pendente
+                                    </span>
+                                    <span th:if="${!matricula.certificadoDisponivel and !matricula.aguardandoCertificado}"
+                                          class="badge bg-secondary">
+                                        <i class="fas fa-ban me-1"></i>Não Disponível
+                                    </span>
+                                    <!-- Link para visualizar certificado -->
+                                    <div th:if="${matricula.certificadoDisponivel}" class="mt-1">
+                                        <a th:href="@{/matricula/visualizar-certificado/{id}(id=${matricula.id})}"
+                                           class="btn btn-sm btn-outline-info"
+                                           title="Visualizar certificado"
+                                           target="_blank">
+                                            <i class="fas fa-eye"></i>
+                                        </a>
+                                        <a th:href="@{/matricula/download-certificado/{id}(id=${matricula.id})}"
+                                           class="btn btn-sm btn-outline-success"
+                                           title="Baixar certificado">
+                                            <i class="fas fa-download"></i>
+                                        </a>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="btn-group btn-group-sm" role="group">
+                                        <!-- Botão Detalhes -->
+                                        <a th:href="@{/matricula/detalhes/{id}(id=${matricula.id})}" 
+                                           class="btn btn-outline-primary"
+                                           title="Ver detalhes">
+                                            <i class="fas fa-eye"></i>
+                                        </a>
+                                       
+                                        <!-- Botão Excluir -->
+                                        <a th:href="@{/matricula/excluir/{id}(id=${matricula.id})}" 
+                                           class="btn btn-outline-danger"
+                                           title="Excluir matrícula"
+                                           onclick="return confirm('Tem certeza que deseja excluir esta matrícula?')">
+                                            <i class="fas fa-trash"></i>
+                                        </a>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Versão Mobile (Cards) -->
+            <div class="d-md-none">
+                <div class="row g-3">
+                    <div th:each="matricula : ${matriculas}" class="col-12">
+                        <div class="card mobile-curso-card h-100">
+                            <div class="card-body p-3">
+                                <div class="d-flex justify-content-between align-items-start mb-2">
+                                    <h5 class="card-title text-primary mb-0" th:text="${matricula.curso.nomeExibicao}"></h5>
+                                    <small class="text-muted fw-bold" th:text="'ID: ' + ${matricula.id}"></small>
+                                </div>
+                                
+                                <div class="row g-2 mb-2">
+                                    <div class="col-12">
+                                        <small class="text-muted"><i class="fas fa-user me-1"></i>Aluno:</small>
+                                        <div class="fw-bold" th:text="${matricula.usuario.nome}"></div>
+                                        <small class="text-muted" th:text="${matricula.usuario.email}"></small>
+                                    </div>
+                                </div>
+
+                                <div class="row g-2 mb-2">
+                                    <div class="col-6">
+                                        <small class="text-muted"><i class="fas fa-map-marker-alt me-1"></i>Local:</small>
+                                        <div th:text="${matricula.curso.lotacao.nome}"></div>
+                                    </div>
+                                    <div class="col-6">
+                                        <small class="text-muted"><i class="fas fa-info-circle me-1"></i>Status:</small>
+                                        <div>
+                                            <span th:classappend="${matricula.efetivada} ? 'badge bg-success' : 'badge bg-warning'"
+                                                  class="badge">
+                                                <span th:text="${matricula.efetivada} ? 'Efetivada' : 'Pendente'"></span>
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="row g-2 mb-2">
+                                    <div class="col-6">
+                                        <small class="text-muted"><i class="fas fa-check-circle me-1"></i>Aprovação:</small>
+                                        <div>
+                                            <span th:if="${matricula.alunoAprovado == null}"
+                                                  class="badge bg-secondary">
+                                                Pendente
+                                            </span>
+                                            <span th:if="${matricula.alunoAprovado == true}"
+                                                  class="badge bg-success">
+                                                Aprovado
+                                            </span>
+                                            <span th:if="${matricula.alunoAprovado == false}"
+                                                  class="badge bg-danger">
+                                                Reprovado
+                                            </span>
+                                        </div>
+                                    </div>
+                                    <div class="col-6">
+                                        <small class="text-muted"><i class="fas fa-certificate me-1"></i>Certificado:</small>
+                                        <div>
+                                            <span th:if="${matricula.certificadoDisponivel}"
+                                                  class="badge bg-success">
+                                                Disponível
+                                            </span>
+                                            <span th:if="${matricula.aguardandoCertificado}"
+                                                  class="badge bg-warning">
+                                                Pendente
+                                            </span>
+                                            <span th:if="${!matricula.certificadoDisponivel and !matricula.aguardandoCertificado}"
+                                                  class="badge bg-secondary">
+                                                Não Disponível
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="d-grid gap-2 pt-3 border-top mobile-actions">
+                                    <!-- Ações de Aprovação -->
+                                    <div th:if="${matricula.efetivada and matricula.alunoAprovado == null}" 
+                                         class="d-grid gap-2">
+                                        <button class="btn btn-sm btn-outline-success"
+                                                th:onclick="'aprovarMatricula(' + ${matricula.id} + ')'">
+                                            <i class="fas fa-check me-2"></i>Aprovar Aluno
+                                        </button>
+                                        <button class="btn btn-sm btn-outline-danger"
+                                                th:onclick="'reprovarMatricula(' + ${matricula.id} + ')'">
+                                            <i class="fas fa-times me-2"></i>Reprovar Aluno
+                                        </button>
+                                    </div>
+
+                                    <!-- Ações de Certificado -->
+                                    <div th:if="${matricula.certificadoDisponivel}" class="d-grid gap-2">
+                                        <a th:href="@{/matricula/visualizar-certificado/{id}(id=${matricula.id})}"
+                                           class="btn btn-sm btn-outline-info"
+                                           target="_blank">
+                                            <i class="fas fa-eye me-2"></i>Visualizar Certificado
+                                        </a>
+                                        <a th:href="@{/matricula/download-certificado/{id}(id=${matricula.id})}"
+                                           class="btn btn-sm btn-outline-success">
+                                            <i class="fas fa-download me-2"></i>Baixar Certificado
+                                        </a>
+                                    </div>
+
+                                    <!-- Ações Principais -->
+                                    <div class="d-grid gap-2">
+                                        <a th:href="@{/matricula/detalhes/{id}(id=${matricula.id})}" 
+                                           class="btn btn-sm btn-outline-primary">
+                                            <i class="fas fa-eye me-2"></i>Ver Detalhes
+                                        </a>
+                                        <a th:href="@{/matricula/excluir/{id}(id=${matricula.id})}" 
+                                           class="btn btn-sm btn-outline-danger"
+                                           onclick="return confirm('Excluir esta matrícula?')">
+                                            <i class="fas fa-trash me-2"></i>Excluir Matrícula
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Estado Vazio -->
+        <div th:if="${matriculas == null or matriculas.empty}" class="text-center py-5 empty-cursos-state">
+            <i class="fas fa-inbox fa-3x text-muted mb-3"></i>
+            <h4 class="text-muted h5 h4-md">Nenhuma matrícula cadastrada</h4>
+            <p class="text-muted mb-3">Clique em "Nova Matrícula" para adicionar a primeira matrícula.</p>
+        </div>
+    </div>
+</div>
+
+<!-- Script para funcionalidades -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Tooltips para melhorar acessibilidade
+    if (typeof bootstrap !== 'undefined') {
+        const tooltipTriggerList = [].slice.call(document.querySelectorAll('[title]'));
+        tooltipTriggerList.map(function(tooltipTriggerEl) {
+            return new bootstrap.Tooltip(tooltipTriggerEl);
+        });
+    }
+
+    // Confirmação para exclusão
+    const deleteButtons = document.querySelectorAll('a[href*="/matricula/excluir/"]');
+    deleteButtons.forEach(button => {
+        button.addEventListener('click', function(e) {
+            if (!confirm('Tem certeza que deseja excluir esta matrícula?')) {
+                e.preventDefault();
+            }
+        });
+    });
+});
+
+// Funções para aprovar/reprovar matrículas (mantidas iguais)
+function aprovarMatricula(matriculaId) {
+    if (confirm('Deseja aprovar este aluno?')) {
+        fetch('/matricula/aprovar/' + matriculaId, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': document.querySelector('meta[name="_csrf"]').getAttribute('content')
+            }
+        })
+        .then(response => {
+            if (response.ok) {
+                location.reload();
+            } else {
+                alert('Erro ao aprovar matrícula');
+            }
+        })
+        .catch(error => {
+            console.error('Erro:', error);
+            alert('Erro ao aprovar matrícula');
+        });
+    }
+}
+
+function reprovarMatricula(matriculaId) {
+    if (confirm('Deseja reprovar este aluno?')) {
+        fetch('/matricula/reprovar/' + matriculaId, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': document.querySelector('meta[name="_csrf"]').getAttribute('content')
+            }
+        })
+        .then(response => {
+            if (response.ok) {
+                location.reload();
+            } else {
+                alert('Erro ao reprovar matrícula');
+            }
+        })
+        .catch(error => {
+            console.error('Erro:', error);
+            alert('Erro ao reprovar matrícula');
+        });
+    }
+}
+</script>

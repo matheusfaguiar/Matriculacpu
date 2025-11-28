@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Minhas Matrículas</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+</head>
+<body>
+<div th:fragment="content">
+    <div class="container mt-3 mt-md-5">
+        <!-- Cabeçalho -->
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h3 class="h5 h4-md mb-0"><i class="fas fa-graduation-cap me-2"></i>Minhas Matrículas</h3>
+        </div>
+
+        <!-- Conteúdo apenas quando há matrículas -->
+        <div th:if="${matriculas != null and !matriculas.empty}">
+            <!-- Contador de Matrículas -->
+            <div class="row mb-3">
+                <div class="col-12">
+                    <div class="text-muted small">
+                        <i class="fas fa-info-circle me-1"></i>
+                        <span th:text="${matriculas.size()}"></span> matrículas encontradas
+                    </div>
+                </div>
+            </div>
+
+            <!-- Versão Desktop (Table com DataTables) -->
+            <div class="d-none d-md-block">
+                <div class="table-responsive">
+                    <table id="tabelaMatriculas" class="datatable display table table-striped table-hover align-middle" style="width:100%">
+                        <thead class="table-primary">
+                            <tr>
+                                <th><i class="fas fa-bookmark me-2"></i>Curso</th>
+                                <th><i class="fas fa-calendar-day me-2"></i>Data da Matrícula</th>
+                                <th><i class="fas fa-info-circle me-2"></i>Status</th>
+                                <th width="180"><i class="fas fa-cogs me-2"></i>Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:each="matricula : ${matriculas}">
+                                <td th:text="${matricula.curso?.nomeExibicao}" class="fw-bold text-primary"></td>
+                                <td>
+                                    <span th:if="${matricula.dataEfetivacao != null}" 
+                                        th:text="${#temporals.format(matricula.dataEfetivacao, 'dd/MM/yyyy')}"
+                                        class="fw-bold text-success">
+                                        Data
+                                    </span>
+                                    <span th:if="${matricula.dataEfetivacao == null}" 
+                                        class="text-muted fw-bold">
+                                        <i class="fas fa-clock me-1"></i>Pendente
+                                    </span>
+                                </td>
+                                <td>
+                                    <!-- NOVA LÓGICA: Badge "Não Matriculado" para cursos finalizados sem matrícula efetivada -->
+                                    <span th:if="${matricula.curso.dataFim != null and matricula.curso.dataFim <= T(java.time.LocalDate).now() and matricula.dataEfetivacao == null}"
+                                        class="badge bg-secondary"
+                                        title="Curso finalizado - Matrícula não efetivada">
+                                        <i class="fas fa-user-times me-1"></i>
+                                        Não Matriculado
+                                    </span>
+                                    <span th:unless="${matricula.curso.dataFim != null and matricula.curso.dataFim <= T(java.time.LocalDate).now() and matricula.dataEfetivacao == null}"
+                                        th:classappend="'badge bg-' + ${matricula.statusCor}" 
+                                        class="badge status-badge">
+                                        <i th:classappend="${matricula.statusIcone} + ' me-1'"></i>
+                                        <span th:text="${matricula.statusTexto}">Status</span>
+                                    </span>
+                                </td>
+                                <td>
+                                    <div class="d-flex align-items-center gap-1">
+                                        <div class="btn-group btn-group-sm" role="group">
+                                            <div th:if="${matricula.curso.dataFim != null and matricula.curso.dataFim <= T(java.time.LocalDate).now() and matricula.dataEfetivacao == null}">
+                                                <!-- Apenas botão de excluir -->
+                                                <a th:href="@{/matricula/cancelar/{id}(id=${matricula.id})}" 
+                                                class="btn btn-outline-danger"
+                                                title="Excluir matrícula"
+                                                onclick="return confirm('Tem certeza que deseja excluir esta matrícula? O curso já foi finalizado.')">
+                                                    <i class="fas fa-trash"></i>
+                                                </a>
+                                            </div>
+                                            <div th:unless="${matricula.curso.dataFim != null and matricula.curso.dataFim <= T(java.time.LocalDate).now() and matricula.dataEfetivacao == null}">
+                                                <!-- BOTÃO MODIFICADO: Se matrícula pendente, direciona para continuar matrícula -->
+                                                <a th:if="${matricula.status == 'PENDENTE' or matricula.dataEfetivacao == null}"
+                                                th:href="@{/matricula/nova(cursoId=${matricula.curso.id})}" 
+                                                class="btn btn-outline-warning"
+                                                title="Continuar matrícula">
+                                                    <i class="fas fa-play-circle"></i>
+                                                </a>
+                                                <!-- Se matrícula concluída, mostra detalhes normal -->
+                                                <a th:unless="${matricula.status == 'PENDENTE' or matricula.dataEfetivacao == null}"
+                                                th:href="@{/matricula/confirmacao?matriculaId={id}(id=${matricula.id})}" 
+                                                class="btn btn-outline-primary"
+                                                title="Ver detalhes">
+                                                    <i class="fas fa-eye"></i>
+                                                </a>
+                                                <!-- Cancelar apenas para matrículas pendentes -->
+                                                <a th:if="${matricula.status == 'PENDENTE'}"
+                                                th:href="@{/matricula/cancelar/{id}(id=${matricula.id})}" 
+                                                class="btn btn-outline-danger"
+                                                title="Cancelar matrícula"
+                                                onclick="return confirm('Tem certeza que deseja cancelar esta matrícula?')">
+                                                    <i class="fas fa-times"></i>
+                                                </a>
+                                                <!-- Certificado disponível -->
+                                                <a th:if="${matricula.certificadoDisponivel}"
+                                                th:href="@{/matricula/download-certificado/{id}(id=${matricula.id})}" 
+                                                class="btn btn-outline-success"
+                                                title="Baixar certificado"
+                                                target="_blank">
+                                                    <i class="fas fa-download"></i>
+                                                </a>
+                                                <!-- Aguardando certificado -->
+                                                <button th:if="${matricula.aguardandoCertificado}"
+                                                        class="btn btn-outline-secondary"
+                                                        title="Aguardando emissão do certificado"
+                                                        disabled>
+                                                    <i class="fas fa-clock"></i>
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Versão Mobile (Cards) -->
+            <div class="d-md-none">
+                <div class="row g-3">
+                    <div th:each="matricula : ${matriculas}" class="col-12">
+                        <div class="card mobile-matricula-card h-100">
+                            <div class="card-body">
+                                <h5 class="card-title text-primary mb-3" th:text="${matricula.curso?.nome}">Nome do Curso</h5>
+                                
+                                <div class="row g-2 mb-3">
+                                    <div class="col-6">
+                                        <small class="text-muted"><i class="fas fa-info-circle me-1"></i>Status:</small>
+                                        <div>
+                                            <!-- NOVA LÓGICA: Badge "Não Matriculado" para cursos finalizados sem matrícula efetivada -->
+                                            <span th:if="${matricula.curso.dataFim != null and matricula.curso.dataFim <= T(java.time.LocalDate).now() and matricula.dataEfetivacao == null}"
+                                                class="badge bg-secondary"
+                                                title="Curso finalizado - Matrícula não efetivada">
+                                                <i class="fas fa-user-times me-1"></i>
+                                                Não Matriculado
+                                            </span>
+                                            <span th:unless="${matricula.curso.dataFim != null and matricula.curso.dataFim <= T(java.time.LocalDate).now() and matricula.dataEfetivacao == null}"
+                                                th:classappend="'badge bg-' + ${matricula.statusCor}" 
+                                                class="badge status-badge">
+                                                <i th:classappend="${matricula.statusIcone} + ' me-1'"></i>
+                                                <span th:text="${matricula.statusTexto}">Status</span>
+                                            </span>
+                                        </div>
+                                    </div>
+                                    <div class="col-6">
+                                        <small class="text-muted"><i class="fas fa-calendar-day me-1"></i>Data:</small>
+                                        <div>
+                                            <span th:if="${matricula.dataEfetivacao != null}" 
+                                                th:text="${#temporals.format(matricula.dataEfetivacao, 'dd/MM/yyyy')}"
+                                                class="fw-bold text-success">
+                                                Data
+                                            </span>
+                                            <span th:if="${matricula.dataEfetivacao == null}" 
+                                                class="text-muted fw-bold">
+                                                <i class="fas fa-clock me-1"></i>Pendente
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="d-grid gap-2 pt-3 border-top mobile-actions">
+                                    <!-- NOVA LÓGICA: Se curso finalizado e matrícula não efetivada, mostra apenas excluir -->
+                                    <div th:if="${matricula.curso.dataFim != null and matricula.curso.dataFim <= T(java.time.LocalDate).now() and matricula.dataEfetivacao == null}">
+                                        <a th:href="@{/matricula/cancelar/{id}(id=${matricula.id})}" 
+                                        class="btn btn-sm btn-outline-danger"
+                                        onclick="return confirm('Tem certeza que deseja excluir esta matrícula? O curso já foi finalizado.')">
+                                            <i class="fas fa-trash me-2"></i>Excluir
+                                        </a>
+                                    </div>
+                                    
+                                    <!-- LÓGICA ORIGINAL para outros casos -->
+                                    <div th:unless="${matricula.curso.dataFim != null and matricula.curso.dataFim <= T(java.time.LocalDate).now() and matricula.dataEfetivacao == null}">
+                                        <!-- BOTÃO MODIFICADO: Se matrícula pendente, direciona para continuar matrícula -->
+                                        <a th:if="${matricula.status == 'PENDENTE' or matricula.dataEfetivacao == null}"
+                                        th:href="@{/matricula/nova(cursoId=${matricula.curso.id})}" 
+                                        class="btn btn-sm btn-outline-warning">
+                                            <i class="fas fa-play-circle me-2"></i>Continuar
+                                        </a>
+                                        
+                                        <!-- Se matrícula concluída, mostra detalhes normal -->
+                                        <a th:unless="${matricula.status == 'PENDENTE' or matricula.dataEfetivacao == null}"
+                                        th:href="@{/matricula/confirmacao?matriculaId={id}(id=${matricula.id})}" 
+                                        class="btn btn-sm btn-outline-primary">
+                                            <i class="fas fa-eye me-2"></i>Detalhes
+                                        </a>
+                                        
+                                        <!-- Cancelar apenas para matrículas pendentes -->
+                                        <a th:if="${matricula.status == 'PENDENTE'}"
+                                        th:href="@{/matricula/cancelar/{id}(id=${matricula.id})}" 
+                                        class="btn btn-sm btn-outline-danger"
+                                        onclick="return confirm('Tem certeza que deseja cancelar esta matrícula?')">
+                                            <i class="fas fa-times me-2"></i>Cancelar
+                                        </a>
+
+                                        <!-- Certificado disponível -->
+                                        <a th:if="${matricula.certificadoDisponivel}"
+                                        th:href="@{/matricula/download-certificado/{id}(id=${matricula.id})}" 
+                                        class="btn btn-sm btn-outline-success"
+                                        target="_blank">
+                                            <i class="fas fa-download me-2"></i>Certificado
+                                        </a>
+
+                                        <!-- Aguardando certificado -->
+                                        <button th:if="${matricula.aguardandoCertificado}"
+                                                class="btn btn-sm btn-outline-secondary"
+                                                disabled
+                                                title="Aguardando emissão do certificado">
+                                            <i class="fas fa-clock me-2"></i>Certificado
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <!-- Mensagem para certificado pendente -->
+                                <div th:if="${matricula.aguardandoCertificado}" class="mt-3">
+                                    <small class="text-muted">
+                                        <i class="fas fa-info-circle me-1"></i>
+                                        Aguardando emissão do certificado
+                                    </small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Mensagem quando não há matrículas -->
+        <div th:if="${matriculas == null or matriculas.empty}" class="text-center py-5 empty-cursos-state">
+            <i class="fas fa-inbox fa-3x text-muted mb-3"></i>
+            <h4 class="text-muted h5 h4-md">Nenhuma matrícula encontrada...</h4>
+            <p class="text-muted mb-3">Você ainda não realizou nenhuma matrícula em nossos cursos.</p>
+            <a th:href="@{/}" class="btn btn-primary">
+                <i class="fas fa-search me-1"></i>Explorar Cursos
+            </a>
+        </div>
+    </div>
+</div>
+
+<!-- Script para melhorar a experiência do usuário -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Adiciona confirmação para cancelamento
+    const cancelButtons = document.querySelectorAll('a[href*="/matricula/cancelar/"]');
+    cancelButtons.forEach(button => {
+        button.addEventListener('click', function(e) {
+            const isExpiredCourse = button.closest('tr, .mobile-matricula-card')?.querySelector('.bg-secondary') != null;
+            const message = isExpiredCourse 
+                ? 'Tem certeza que deseja excluir esta matrícula? O curso já foi finalizado.'
+                : 'Tem certeza que deseja cancelar esta matrícula?';
+            
+            if (!confirm(message)) {
+                e.preventDefault();
+            }
+        });
+    });
+});
+</script>
+</body>
+</html>

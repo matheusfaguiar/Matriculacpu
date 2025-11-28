@@ -1,0 +1,12 @@
+<div th:fragment="content">
+    <div class="text-center mt-5">
+        <h1 class="display-4 text-danger">
+            <i class="fa-solid fa-triangle-exclamation"></i> Oops!
+        </h1>
+        <h2 th:text="${status} + ' - ' + ${error}">Erro</h2>
+        <p th:text="${message}">Mensagem do erro</p>
+        <a th:href="@{/}" class="btn btn-primary mt-3">
+            <i class="fa fa-home"></i> Voltar para a página inicial
+        </a>
+    </div>
+</div>

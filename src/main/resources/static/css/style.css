@@ -1,0 +1,652 @@
+/* ===== VARIÁVEIS CSS ===== */
+:root {
+    --primary-color: #0d6efd;
+    --primary-dark: #0a58ca;
+    --secondary-color: #6c757d;
+    --light-color: #f8f9fa;
+    --dark-color: #212529;
+    --border-radius: 10px;
+    --box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+    --transition: all 0.3s ease;
+}
+
+/* ===== RESET E CONFIGURAÇÕES GERAIS ===== */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html {
+    scroll-behavior: smooth;
+}
+
+body {
+    font-family: 'Nunito Sans', 'Martel Sans', 'Open Sans', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: var(--light-color);
+    color: var(--dark-color);
+    line-height: 1.6;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+/* ===== LAYOUT PRINCIPAL COM FLEXBOX ===== */
+.app-container {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+/* ===== HEADER ===== */
+.navbar {
+    background: linear-gradient(90deg, var(--primary-color) 0%, var(--primary-dark) 100%);
+    box-shadow: 0 2px 15px rgba(0, 0, 0, 0.1);
+    padding: 0.8rem 1rem;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 1000;
+}
+
+.navbar-brand {
+    font-weight: 700;
+    font-size: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+/* ===== CONTEÚDO PRINCIPAL ===== */
+.main-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    padding-top: 80px; /* Compensa a altura do header fixo */
+}
+
+.welcome-section {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex: 1;
+    padding: 2rem;
+}
+
+.welcome-card {
+    max-width: 450px;
+    width: 100%;
+    border-radius: var(--border-radius);
+    box-shadow: var(--box-shadow);
+    border: none;
+}
+
+/* ===== SEÇÃO DE MATRÍCULAS ===== */
+.matricula-card {
+    border-radius: var(--border-radius);
+    box-shadow: var(--box-shadow);
+    border: none;
+    transition: var(--transition);
+}
+
+.matricula-card:hover {
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.12);
+}
+
+.mobile-matricula-card {
+    border-radius: var(--border-radius);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    border: 1px solid rgba(0, 0, 0, 0.08);
+    transition: var(--transition);
+}
+
+.mobile-matricula-card:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+    transform: translateY(-2px);
+}
+
+/* ===== BADGES DE STATUS ===== */
+.status-badge {
+    font-size: 0.75em;
+    white-space: nowrap;
+    border-radius: 6px;
+    padding: 0.5em 0.8em;
+}
+
+/* ===== AÇÕES MOBILE ===== */
+.mobile-actions {
+    border-top: 1px solid rgba(0, 0, 0, 0.1) !important;
+}
+
+.mobile-actions .btn {
+    font-size: 0.775rem;
+    padding: 0.4rem 0.6rem;
+}
+
+/* ===== ESTADO VAZIO ===== */
+.empty-state {
+    background-color: rgba(0, 0, 0, 0.02);
+    border-radius: var(--border-radius);
+}
+
+/* ===== SEÇÃO DE ESTATÍSTICAS ===== */
+.stats-section {
+    padding: 2rem;
+    background-color: #fff;
+}
+
+.section-title {
+    text-align: center;
+    margin-bottom: 2rem;
+    color: var(--primary-color);
+    font-weight: 600;
+}
+
+.stats-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1.5rem;
+    justify-content: center;
+}
+
+.stats-card {
+    flex: 1 1 280px;
+    max-width: 350px;
+    border-radius: var(--border-radius);
+    overflow: hidden;
+    border: none;
+    box-shadow: var(--box-shadow);
+    transition: var(--transition);
+}
+
+.stats-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+}
+
+.stats-card-header {
+    background: linear-gradient(90deg, var(--primary-color) 0%, var(--primary-dark) 100%);
+    color: white;
+    font-weight: 600;
+    padding: 1rem 1.5rem;
+}
+
+.stats-card-body {
+    padding: 1.5rem;
+}
+
+/* ===== USER PROFILE ===== */
+.user-profile {
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+    color: white;
+}
+
+.user-info {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+}
+
+.user-name {
+    font-weight: 500;
+    font-size: 0.95rem;
+}
+
+.user-role {
+    font-size: 0.8rem;
+    opacity: 0.9;
+}
+
+.user-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+}
+
+/* ===== FOOTER ===== */
+.footer {
+    background-color: var(--dark-color);
+    color: var(--light-color);
+    padding: 1.5rem 0;
+    text-align: center;
+    margin-top: auto;
+}
+
+.footer-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+}
+
+.footer-links {
+    display: flex;
+    gap: 1.5rem;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+.footer-link {
+    color: var(--light-color);
+    text-decoration: none;
+    transition: var(--transition);
+}
+
+.footer-link:hover {
+    color: var(--primary-color);
+}
+
+/* ===== BOTÕES ===== */
+.btn-primary {
+    background-color: var(--primary-color);
+    border-color: var(--primary-color);
+    font-weight: 500;
+    transition: var(--transition);
+}
+
+.btn-primary:hover {
+    background-color: var(--primary-dark);
+    border-color: var(--primary-dark);
+}
+
+/* Radios e checkboxes maiores e mais clicáveis */
+.form-check-input[type="radio"] {
+  width: 1.4em;
+  height: 1.4em;
+  cursor: pointer;
+  margin-top: 0.1em;
+  accent-color: #0d6efd; /* cor primária Bootstrap */
+}
+
+/* Aumentar área clicável */
+.form-check-label {
+  font-size: 1.1em;
+  margin-left: 0.4em;
+  cursor: pointer;
+}
+
+/* Deixar pares bem espaçados */
+.form-check {
+  margin-right: 1.5rem;
+  margin-bottom: 0.4rem;
+}
+
+/* Efeito de foco e hover para acessibilidade */
+.form-check-input:hover {
+  box-shadow: 0 0 0 3px rgba(13, 110, 253, 0.2);
+}
+
+.form-check-input:focus {
+  box-shadow: 0 0 0 3px rgba(13, 110, 253, 0.25);
+}
+
+/* ===== TOASTS ===== */
+#toast-container {
+    margin-top: 70px; /* ajusta conforme a altura da navbar */
+    width: auto; /* centraliza automaticamente */
+}
+
+/* Opacidade reduzida */
+#toast-container > div {
+    opacity: 0.95 !important;
+}
+
+/* Diferencia cores se quiser reforçar */
+#toast-container > .toast-success {
+    background-color: #28a745 !important; /* verde */
+}
+#toast-container > .toast-error {
+    background-color: #dc3545 !important; /* vermelho */
+}
+
+/* ===== RESPONSIVIDADE ===== */
+@media (max-width: 768px) {
+    .navbar-brand {
+        font-size: 1.2rem;
+    }
+    
+    .main-content {
+        padding-top: 70px;
+    }
+    
+    .welcome-section {
+        padding: 1rem;
+    }
+    
+    .stats-section {
+        padding: 1rem;
+    }
+    
+    .stats-card {
+        flex: 1 1 100%;
+    }
+    
+    .user-info {
+        display: none;
+    }
+    
+    /* Ajustes específicos para matrículas mobile */
+    .mobile-actions {
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+    
+    .mobile-actions .btn {
+        width: 100%;
+        justify-content: center;
+    }
+}
+
+@media (max-width: 576px) {
+    .navbar-brand span {
+        display: none;
+    }
+    
+    .footer-links {
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+    
+    .container {
+        padding-left: 12px;
+        padding-right: 12px;
+    }
+    
+    .matricula-card .card-body {
+        padding: 1rem;
+    }
+}
+
+/* Melhora a visualização dos cards no mobile */
+.card {
+    transition: box-shadow 0.2s ease-in-out;
+}
+
+/* ===== ESTILOS PARA PÁGINA INICIAL (INDEX) ===== */
+
+/* Cards de cursos mobile */
+.mobile-curso-card {
+    border-radius: var(--border-radius);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    border: 1px solid rgba(0, 0, 0, 0.08);
+    transition: var(--transition);
+}
+
+.mobile-curso-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+/* Status badges */
+.status-badge {
+    font-size: 0.75rem;
+    white-space: nowrap;
+    border-radius: 6px;
+    padding: 0.5em 0.8em;
+    transition: var(--transition);
+}
+
+.status-badge:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+/* Botões em grupos pequenos */
+.btn-group-sm .btn {
+    padding: 0.25rem 0.5rem;
+    font-size: 0.875rem;
+}
+
+/* Cabeçalho do card de cursos */
+.cursos-card-header {
+    background: linear-gradient(90deg, var(--primary-color) 0%, var(--primary-dark) 100%);
+    color: white;
+    border-radius: var(--border-radius) var(--border-radius) 0 0 !important;
+}
+
+/* Badge de vagas */
+.vagas-badge {
+    background-color: var(--bs-info) !important;
+    font-size: 0.8rem;
+}
+
+/* ===== RESPONSIVIDADE ESPECÍFICA PARA INDEX ===== */
+
+/* Melhora a legibilidade em mobile */
+@media (max-width: 767.98px) {
+    .mobile-curso-card .card-body {
+        padding: 1rem;
+    }
+    
+    .btn {
+        font-size: 0.9rem;
+        padding: 0.5rem 1rem;
+    }
+    
+    /* Ajustes de tipografia para mobile */
+    .h2-md {
+        font-size: 1.5rem;
+    }
+    
+    .h4-md {
+        font-size: 1.1rem;
+    }
+}
+
+/* Ajustes para tabelas responsivas */
+.table-responsive {
+    border-radius: var(--border-radius);
+    overflow: hidden;
+}
+
+/* Melhora a aparência dos badges em telas pequenas */
+@media (max-width: 400px) {
+    .status-badge {
+        font-size: 0.7em;
+        padding: 0.4em 0.6em;
+    }
+}
+
+/* ===== BOTÕES DE CERTIFICADO ===== */
+.btn-outline-secondary:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+/* Tooltip customizado para botões desabilitados */
+.btn[disabled] {
+    pointer-events: auto; /* Permite tooltip em botões desabilitados */
+}
+
+/* Melhora a aparência dos badges de status */
+.status-badge {
+    font-size: 0.75em;
+    white-space: nowrap;
+    border-radius: 6px;
+    padding: 0.5em 0.8em;
+    transition: var(--transition);
+}
+
+.status-badge:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+/* Ajustes para mensagens de certificado pendente */
+.text-muted small {
+    font-size: 0.8rem;
+}
+
+/* ===== CARDS DE CURSOS ===== */
+.cursos-card {
+    border-radius: var(--border-radius);
+    box-shadow: var(--box-shadow);
+    border: none;
+    transition: var(--transition);
+}
+
+.cursos-card:hover {
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.12);
+}
+
+.curso-mobile-card {
+    border-radius: var(--border-radius);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    border: 1px solid rgba(0, 0, 0, 0.08);
+    transition: var(--transition);
+}
+
+.curso-mobile-card:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+    transform: translateY(-2px);
+}
+
+/* ===== BADGES ===== */
+.badge {
+    font-size: 0.75em;
+    white-space: nowrap;
+}
+
+/* ===== AÇÕES MOBILE ===== */
+.mobile-actions {
+    border-top: 1px solid rgba(0, 0, 0, 0.1) !important;
+    gap: 0.3rem;
+}
+
+.mobile-actions .btn {
+    font-size: 0.75rem;
+    padding: 0.3rem 0.5rem;
+    flex: 1;
+    min-width: 0;
+}
+
+@media (max-width: 400px) {
+    .mobile-actions {
+        flex-direction: column;
+    }
+    
+    .mobile-actions .btn {
+        width: 100%;
+    }
+}
+
+
+/* Estilos para botões do DataTables */
+.dt-buttons .btn {
+    margin-right: 0.3rem;
+    margin-bottom: 0.3rem;
+}
+
+/* Ajustes responsivos para DataTables */
+@media (max-width: 768px) {
+    .dataTables_wrapper .dt-buttons {
+        text-align: center;
+    }
+    
+    .dataTables_wrapper .dt-buttons .btn {
+        margin: 0.1rem;
+        font-size: 0.75rem;
+        padding: 0.25rem 0.5rem;
+    }
+}
+
+/* ===== ESTILOS PARA USUÁRIOS ===== */
+.usuario-card {
+    border-radius: var(--border-radius);
+    box-shadow: var(--box-shadow);
+    border: none;
+    transition: var(--transition);
+}
+
+.usuario-card:hover {
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.12);
+}
+
+.mobile-usuario-card {
+    border-radius: var(--border-radius);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    border: 1px solid rgba(0, 0, 0, 0.08);
+    transition: var(--transition);
+}
+
+.mobile-usuario-card:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+    transform: translateY(-2px);
+}
+
+.mobile-actions {
+    gap: 0.3rem;
+}
+
+.mobile-actions .btn {
+    flex: 1;
+    min-width: 0;
+    font-size: 0.75rem;
+    padding: 0.3rem 0.5rem;
+}
+
+/* Cores específicas para badges de perfil */
+.badge.bg-danger { background-color: var(--bs-danger) !important; }
+.badge.bg-warning { background-color: var(--bs-warning) !important; color: #000 !important; }
+.badge.bg-info { background-color: var(--bs-info) !important; }
+
+/* Estilo para badges clicáveis */
+.cursor-pointer {
+    cursor: pointer;
+}
+
+.filtro-badge {
+    transition: all 0.2s ease;
+}
+
+.filtro-badge:hover {
+    opacity: 0.8;
+    transform: scale(1.05);
+}
+
+/* Estilo para a coluna unificada de Perfil/Lotação */
+.table td:nth-child(4) {
+    vertical-align: top;
+}
+
+/* Estilo para o alerta de filtro ativo */
+#filtroAtivoInfo {
+    border-left: 4px solid #0dcaf0;
+}
+
+/* Responsividade para ações mobile */
+@media (max-width: 400px) {
+    .mobile-actions {
+        flex-direction: column;
+    }
+    
+    .mobile-actions .btn {
+        width: 100%;
+    }
+}
+
+.indicator-circle {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    color: white;
+    font-size: 0.8rem;
+    cursor: default;
+}
+
+/* Para versão mobile - indicadores menores */
+@media (max-width: 767.98px) {
+    .indicator-circle {
+        width: 24px;
+        height: 24px;
+        font-size: 0.7rem;
+    }
+}

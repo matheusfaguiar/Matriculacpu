@@ -1,0 +1,44 @@
+<div th:fragment="formFragment">
+    <div class="modal-header">
+        <h5 class="modal-title" 
+            th:text="${lotacao.id != null} ? 'Editar Lotação' : 'Nova Lotação'">
+        </h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+    </div>
+
+    <div class="modal-body">
+        <form th:action="@{/lotacao/salvar}" th:object="${lotacao}" method="post">
+
+            <div class="mb-3">
+                <label class="form-label">ID</label>
+                <input type="text" class="form-control" th:field="*{id}"  />
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Nome da Lotação</label>
+                <input type="text" class="form-control" th:field="*{nome}" required />
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Endereço</label>
+                <input type="text" class="form-control" th:field="*{endereco}" required />
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Tipo de Lotação</label>
+                <select class="form-select" th:field="*{tipoLotacao.id}" required>
+                    <option value="" disabled th:selected="*{tipoLotacao == null}">Selecione...</option>
+                    <option th:each="tipo : ${tipos}" 
+                            th:value="${tipo.id}" 
+                            th:text="${tipo.descricao}">
+                    </option>
+                </select>
+            </div>
+
+            <div class="modal-footer">
+                <button type="submit" class="btn btn-success">Salvar</button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+            </div>
+        </form>
+    </div>
+</div>

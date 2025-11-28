@@ -1,0 +1,250 @@
+<div th:fragment="campos-usuario(perfis, canEditPerfil, modalId, lotacoesDisponiveis)" th:object="${usuario}">
+  <!-- Linha 1: Nome e Email -->
+  <div class="row g-3">
+    <div class="col-12 col-md-8">
+      <label for="nome" class="form-label">Nome Completo <span class="text-danger">*</span></label>
+      <input type="text" 
+             th:field="*{nome}" 
+             th:id="${'nome'}" 
+             class="form-control" 
+             placeholder="Digite seu nome completo" 
+             required>
+      <div class="invalid-feedback">Por favor, informe o nome completo.</div>
+    </div>
+
+    <div class="col-12 col-md-4">
+      <label for="email" class="form-label">E-mail</label>
+      <input type="email" 
+             th:field="*{email}" 
+             th:id="${'email'}" 
+             class="form-control" 
+             readonly>
+    </div>
+  </div>
+
+  <!-- Linha 2: Nome Social e Identidade de Gênero -->
+  <div class="row g-3">
+    <div class="col-12 col-md-8">
+      <label for="nomeSocial" class="form-label">Nome Social</label>
+      <input type="text" 
+             th:field="*{nomeSocial}" 
+             th:id="${'nomeSocial'}" 
+             class="form-control" 
+             placeholder="Se houver">
+    </div>
+
+    <div class="col-12 col-md-4">
+      <label for="identidadeGenero" class="form-label">Identidade de Gênero <span class="text-danger">*</span></label>
+      <input type="text" 
+             th:field="*{identidadeGenero}" 
+             th:id="${'identidadeGenero'}" 
+             class="form-control" 
+             placeholder="Ex: Feminino, Masculino, Não-binário"
+             required>
+      <div class="invalid-feedback">Por favor, informe sua identidade de gênero.</div>
+    </div>
+  </div>
+
+  <!-- Linha 3: CPF, RG, Órgão Emissor -->
+  <div class="row g-3">
+    <div class="col-12 col-md-4">
+      <label for="cpf" class="form-label">CPF <span class="text-danger">*</span></label>
+      <input type="text" 
+             th:field="*{cpf}" 
+             th:id="${'cpf'}" 
+             class="form-control" 
+             placeholder="000.000.000-00" 
+             required>
+      <div class="invalid-feedback">Por favor, informe o CPF.</div>
+    </div>
+
+    <div class="col-12 col-md-4">
+      <label for="rg" class="form-label">RG <span class="text-danger">*</span></label>
+      <input type="text" 
+             th:field="*{rg}" 
+             th:id="${'rg'}" 
+             class="form-control" 
+             placeholder="Número do RG"
+             required>
+      <div class="invalid-feedback">Por favor, informe o RG.</div>
+    </div>
+
+    <div class="col-12 col-md-4">
+      <label for="rgOrgao" class="form-label">Órgão Emissor</label>
+      <input type="text" 
+             th:field="*{rgOrgao}" 
+             th:id="${'rgOrgao'}" 
+             class="form-control" 
+             placeholder="Ex: SSP/PA">
+    </div>
+  </div>
+
+  <!-- Linha 4: Data de Nascimento, Naturalidade, UF -->
+  <div class="row g-3">
+    <div class="col-12 col-md-4">
+      <label for="dataNascimento" class="form-label">Data de Nascimento <span class="text-danger">*</span></label>
+      <input type="date"
+            th:field="*{dataNascimento}"
+            th:id="${'dataNascimento'}"
+            class="form-control"
+            placeholder="dd/mm/aaaa"
+            required
+            maxlength="10">
+      <div class="invalid-feedback">Informe a data no formato dd/mm/aaaa.</div>
+    </div>
+
+    <div class="col-12 col-md-4">
+      <label for="naturalidade" class="form-label">Naturalidade <span class="text-danger">*</span></label>
+      <input type="text" 
+             th:field="*{naturalidade}" 
+             th:id="${'naturalidade'}" 
+             class="form-control" 
+             placeholder="Cidade de nascimento"
+             required>
+      <div class="invalid-feedback">Por favor, informe a naturalidade.</div>
+    </div>
+
+    <div class="col-12 col-md-4">
+      <label for="uf" class="form-label">UF <span class="text-danger">*</span></label>
+      <input type="text" 
+             th:field="*{uf}" 
+             th:id="${'uf'}" 
+             class="form-control" 
+             maxlength="2" 
+             placeholder="Ex: PA"
+             required>
+      <div class="invalid-feedback">Por favor, informe a UF.</div>
+    </div>
+  </div>
+
+  <!-- Linha 5: Nome da Mãe e Nome do Pai -->
+  <div class="row g-3">
+    <div class="col-12 col-md-6">
+      <label for="nomeMae" class="form-label">Nome da Mãe <span class="text-danger">*</span></label>
+      <input type="text" 
+             th:field="*{nomeMae}" 
+             th:id="${'nomeMae'}" 
+             class="form-control" 
+             placeholder="Nome completo da mãe"
+             required>
+      <div class="invalid-feedback">Por favor, informe o nome da mãe.</div>
+    </div>
+
+    <div class="col-12 col-md-6">
+      <label for="nomePai" class="form-label">Nome do Pai <span class="text-danger">*</span></label>
+      <input type="text" 
+             th:field="*{nomePai}" 
+             th:id="${'nomePai'}" 
+             class="form-control" 
+             placeholder="Nome completo do pai"
+             required>
+      <div class="invalid-feedback">Por favor, informe o nome do pai.</div>
+    </div>
+  </div>
+
+  <!-- Linha 6: Telefone, NIS e CNS na mesma linha -->
+  <div class="row g-3">
+    <div class="col-12 col-md-4">
+      <label for="telefone" class="form-label">Telefone <span class="text-danger">*</span></label>
+      <input type="text" 
+             th:field="*{telefone}" 
+             th:id="${'telefone'}" 
+             class="form-control" 
+             placeholder="(00) 00000-0000"
+             required>
+      <div class="invalid-feedback">Por favor, informe o telefone.</div>
+    </div>
+
+    <div class="col-12 col-md-4">
+      <label for="NIS" class="form-label">NIS</label>
+      <input type="text" 
+             th:field="*{NIS}" 
+             th:id="${'NIS'}" 
+             class="form-control" 
+             placeholder="Número do NIS (PIS/PASEP)">
+    </div>
+
+    <div class="col-12 col-md-4">
+      <label for="CNS" class="form-label">CNS</label>
+      <input type="text" 
+             th:field="*{CNS}" 
+             th:id="${'CNS'}" 
+             class="form-control" 
+             placeholder="Número do Cartão SUS">
+    </div>
+  </div>
+
+  <!-- Linha 7: Perfil e Lotação (apenas para admin) -->
+  <div class="row g-3" th:if="${canEditPerfil}">
+    <!-- Perfil -->
+    <div class="col-12 col-md-6">
+        <label for="perfil" class="form-label">Perfil</label>
+        <select th:id="${'perfil'}"
+                class="form-select"
+                th:field="*{perfil.id}"
+                onchange="toggleLotacaoField(this)">
+            <option value="" disabled>Selecione um perfil</option>
+            <option th:each="p : ${perfis}"
+                    th:value="${p.id}"
+                    th:text="${p.descricao}"
+                    th:selected="${usuario.perfil != null and usuario.perfil.id == p.id}">
+            </option>
+        </select>
+    </div>
+
+    <!-- Lotação (apenas se perfil for técnico - ID 2) -->
+    <div class="col-12 col-md-6" id="lotacaoRow" 
+         th:style="${usuario.perfil != null and usuario.perfil.id == 2} ? 'display: block;' : 'display: none;'">
+        <label for="lotacao" class="form-label">Lotação do Técnico <span class="text-danger">*</span></label>
+        
+        <select th:id="${'lotacao'}"
+                class="form-select"
+                name="lotacaoId"
+                th:if="${lotacoesDisponiveis != null and not lotacoesDisponiveis.empty}">
+            <option value="" disabled th:selected="${lotacaoTecnico == null}">Selecione uma lotação</option>
+            <option th:each="lotacao : ${lotacoesDisponiveis}"
+                    th:value="${lotacao.id}"
+                    th:text="${lotacao.nome}"
+                    th:selected="${lotacaoTecnico != null and lotacaoTecnico.id == lotacao.id}">
+            </option>
+        </select>
+        
+        <!-- Mensagem quando não há lotações disponíveis -->
+        <div th:if="${lotacoesDisponiveis == null or lotacoesDisponiveis.empty}" class="alert alert-warning py-2">
+            <small>
+                <i class="fas fa-exclamation-triangle me-1"></i>
+                <span th:if="${lotacoesDisponiveis == null}">
+                    Lotação não disponível para edição
+                </span>
+                <span th:if="${lotacoesDisponiveis != null and lotacoesDisponiveis.empty}">
+                    Nenhuma lotação disponível
+                </span>
+            </small>
+        </div>
+        
+        <div class="form-text text-muted">
+            <i class="fas fa-info-circle me-1"></i>
+            Esta lotação define em qual local o técnico poderá criar e gerenciar cursos.
+        </div>
+    </div>
+  </div>
+</div>
+
+<!-- Seção adicional para mostrar lotação em modo leitura (quando canEditPerfil é false) -->
+<div class="row g-3" th:if="${!canEditPerfil and usuario.perfil != null and usuario.perfil.id == 2 and lotacaoTecnico != null}">
+    <div class="col-12 col-md-6">
+        <label class="form-label">Lotação Atual</label>
+        <input type="text" 
+               class="form-control" 
+               th:value="${lotacaoTecnico != null ? lotacaoTecnico.nome : 'Nenhuma lotação definida'}" 
+               readonly
+               disabled>
+    </div>
+</div>
+
+<!-- Mensagem informativa para não-admin -->
+<div th:if="${!canEditPerfil and usuario.perfil != null and usuario.perfil.id == 2}" class="alert alert-info mt-3">
+    <i class="fas fa-info-circle me-2"></i>
+    <strong>Informações de Perfil e Lotação:</strong> Apenas administradores podem modificar estas configurações.
+</div>
+

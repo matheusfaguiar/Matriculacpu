@@ -1,0 +1,41 @@
+<!-- src/main/resources/templates/index.html -->
+<div th:fragment="content" class="container mt-5">
+  <div class="text-center mb-5">
+    <h1 class="text-primary mb-3">Cursos da Fundação ParáPaz nas Usinas</h1>
+    <p class="lead">Para realizar sua inscrição em um dos cursos abaixo, faça login com sua conta Google.</p>
+    <a href="/auth/google" class="btn btn-primary mt-3">
+      <i class="bi bi-google me-2"></i>Login com Google
+    </a>
+  </div>
+
+  <hr class="mb-5"/>
+
+  <div class="card shadow p-4">
+    <h3 class="mb-4 text-secondary">Cursos Disponíveis</h3>
+    <div class="table-responsive">
+      <table class="datatable display table table-striped align-middle" style="width:100%">
+        <thead class="table-primary">
+          <tr>
+            <th>Nome</th>
+            <th>Tipo de Curso</th>
+            <th>Local</th>
+            <th>Instrutor</th>
+            <th>Data Início</th>
+            <th>Data Fim</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr th:each="curso : ${cursos}">
+            <td th:text="${curso.nomeExibicao}"></td>
+            <td th:text="${curso.tipocurso.nomeExibicao}"></td>
+            <td th:text="${curso.lotacao.nome}"></td>
+            <td th:text="${curso.horario}"></td>
+            <td th:text="${#temporals.format(curso.dataInicio, 'dd/MM/yyyy')}"></td>
+            <td th:text="${#temporals.format(curso.dataFim, 'dd/MM/yyyy')}"></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+</div>

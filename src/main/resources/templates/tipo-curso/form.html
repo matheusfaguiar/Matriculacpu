@@ -1,0 +1,22 @@
+<div th:fragment="formFragment">
+    <div class="modal-header">
+        <h5 class="modal-title" th:text="${tipoCurso.id != null} ? 'Editar Tipo de Curso' : 'Novo Tipo de Curso'"></h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+    </div>
+
+    <div class="modal-body">
+        <form th:action="@{/tipo-curso/salvar}" th:object="${tipoCurso}" method="post">
+            <input type="hidden" th:field="*{id}"/>
+
+            <div class="mb-3">
+                <label class="form-label">Nome do Tipo de Curso</label>
+                <input type="text" class="form-control" th:field="*{nome}" required/>
+            </div>
+
+            <div class="modal-footer">
+                <button type="submit" class="btn btn-success">Salvar</button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+            </div>
+        </form>
+    </div>
+</div>
