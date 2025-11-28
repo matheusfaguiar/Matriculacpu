@@ -35,24 +35,29 @@ Para instalar e executar o MatriculaCPU, você precisa ter o Java 17 e o Maven i
 
 *   Java 17+ ([Download JDK 17](https://www.oracle.com/java/technologies/javase-jdk17-downloads.html))
 *   Maven ([Download Maven](https://maven.apache.org/download.cgi))
-*   PostgreSQL (ou outro banco de dados compatível)
+*   Banco de Dados MySQL
 
-### Passos para Instalação
+## Início Rápido
 
-1. Clone o repositório.
-2. Configure um banco de dados MySQl conforme o arquivo BDStructure.sql
-3. Forneça as variáveis de ambiente para o sistema
-   2.a ${SPRING_PROFILES_ACTIVE:prod} (dev/prod)
-   2.b$ {MYSQLHOST} (endereço de acesso ao banco de dados)
-   2.c ${MYSQLPORT} (porta de acesso ao banco de dados
-   2.d ${MYSQLDATABASE} (nome do banco de dados)
-${MYSQLUSER} (usuário de acesso)
-${MYSQLPASSWORD} (senha)
-${GOOGLE_CLIENT_ID} (cliente Google/Firebase)
-${GOOGLE_CLIENT_SECRET} (senha Google/Firebase)
-${EMAIL_USERNAME} (email de envio de emails)
-${EMAIL_APP_PASSWORD} (senha do email)
-${SENDGRID_API_KEY} (chave de uso SendGrid)
-${EMAIL_PROVIDER:sendgrid} (provedor de envio de emails)
-${TINYMCE_API_KEY}  (chave de acesso ao TinyMCE)
-(Verificar demais configurações em application.properties)
+1.  **Pré-requisitos:** Java 17, Maven, Banco de dados MySQL
+2.  **Execução:** Execute a aplicação pelo Spring Boot:
+    ```bash
+    export SPRING_PROFILES_ACTIVE=prod
+    export MYSQLHOST=localhost
+    export MYSQLPORT=3306
+    export MYSQLDATABASE=matriculacpu
+    export MYSQLUSER=<seu_usuario_mysql>
+    export MYSQLPASSWORD=<sua_senha_mysql>
+    export GOOGLE_CLIENT_ID=<seu_client_id_google>
+    export GOOGLE_CLIENT_SECRET=<seu_client_secret_google>
+    export EMAIL_USERNAME=<seu_email>
+    export EMAIL_APP_PASSWORD=<sua_senha_email>
+    export SENDGRID_API_KEY=<sua_api_key_sendgrid>
+    export EMAIL_PROVIDER=sendgrid
+    export TINYMCE_API_KEY=<sua_api_key_tinymce>
+    ```
+3.   A aplicação estará disponível em `http://localhost:8080` (ou outra porta configurada).
+
+##  Configurações Adicionais
+
+Verifique o arquivo `src/main/resources/application.properties` para outras configurações que podem ser necessárias, como configurações de porta, etc.
