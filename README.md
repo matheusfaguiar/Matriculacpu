@@ -60,4 +60,6 @@ Para instalar e executar o MatriculaCPU, você precisa ter o Java 17 e o Maven i
 
 ##  Configurações Adicionais
 
-Verifique o arquivo `src/main/resources/application.properties` para outras configurações que podem ser necessárias, como configurações de porta, etc.
+Verifique o arquivo `src/main/resources/application.properties` para outras configurações que podem ser necessárias, como configurações de porta e email.
+
+Para emissão de certificados, criar a pasta `src/main/resources/templates-certificados` e adicionar os arquivos de imagem `frente.jpg` e `verso.jpg`. Consultar os arquivos `CertificadoService.java` e `PdfCertificadoGenerator.java` para mais detalhes.
