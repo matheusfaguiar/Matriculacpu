@@ -4,11 +4,11 @@
 
 MatriculaCPU é um sistema desenvolvido como parte de Atividade Extensionista para o curso de Análise e Desenvolvimento de Sistemas da faculdade IPOG. Ele visa atender às necessidades da Coordenação das Usinas da Fundação ParáPaz, melhorando o gerenciamento de matrículas nos cursos oferecidos e automatizando a criação de certificados para os alunos.
 
-Desenvolvido utilizando Java 17 com Spring, Thymeleaf e Bootstrap.
+Desenvolvido utilizando Java 17 com Spring, MySQL, Thymeleaf e Bootstrap.
 Ferramentas adicionais: 
 - Google (Firebase/OAuth2) para autenticação e envio de emails
-- Sendgrid para envio externo de emails
 - TinyMCE para editor de texto da matriz curricular dos certificados
+- SendGrid para envio externo de emails (opcional)
 
 ## Principais Funcionalidades
 
@@ -20,16 +20,7 @@ Ferramentas adicionais:
 *   Suporte para múltiplos formatos de certificado.
 *   Integração com serviço de e-mail para envio de certificados.
 
-## Início Rápido
-
-1.  **Pré-requisitos:** Java 17, Maven, Banco de dados MySQL
-2.  **Execução:** Execute a aplicação pelo Spring Boot:
-mvn install
-mvn spring-boot:run
-
 ## Instalação
-
-Para instalar e executar o MatriculaCPU, você precisa ter o Java 17 e o Maven instalados.
 
 ### Pré-requisitos
 
@@ -37,10 +28,11 @@ Para instalar e executar o MatriculaCPU, você precisa ter o Java 17 e o Maven i
 *   Maven ([Download Maven](https://maven.apache.org/download.cgi))
 *   Banco de Dados MySQL
 
-## Início Rápido
+### Início Rápido
 
 1.  **Pré-requisitos:** Java 17, Maven, Banco de dados MySQL
-2.  **Execução:** Execute a aplicação pelo Spring Boot:
+2.  Crie um banco de dados MySQL e utilize o arquivo BDStructure.sql para recuperar a estrutura de tabelas do sistema.
+3.  **Execução:** Execute a aplicação pelo Spring Boot:
     ```bash
     export SPRING_PROFILES_ACTIVE=prod
     export MYSQLHOST=localhost
@@ -56,7 +48,7 @@ Para instalar e executar o MatriculaCPU, você precisa ter o Java 17 e o Maven i
     export EMAIL_PROVIDER=sendgrid
     export TINYMCE_API_KEY=<sua_api_key_tinymce>
     ```
-3.   A aplicação estará disponível em `http://localhost:8080` (ou outra porta configurada).
+4.   A aplicação estará disponível em `http://localhost:8080` (ou outra porta configurada).
 
 ##  Configurações Adicionais
 
